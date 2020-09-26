@@ -31,3 +31,6 @@ pytest
 
 # revisit geometry
 sympy
+
+# english dict
+pyenchant
