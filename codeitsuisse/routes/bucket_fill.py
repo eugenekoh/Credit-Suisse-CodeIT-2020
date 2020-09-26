@@ -25,10 +25,12 @@ logger = logging.getLogger(__name__)
 @app.route('/bucket-fill', methods=['POST'])
 def evaluate_bucket_fill():
     image = xmltodict.parse(request.data)
+    logging.info("data sent for evaluation {}".format(image))
     output = bucket_fill(image["svg"]["circle"], image["svg"]["polyline"])
     response = {}
     response["result"] = int(output)
-    return jsonify(response)
+    logging.info("result :{}".format(response))
+    return jsonify(image)
 
 def bucket_fill(circles, polylines):
     waterXArr = []
@@ -128,6 +130,10 @@ def bucket_fill(circles, polylines):
                         break
     return areas
 
+# def remove_overlapping_ranges(intervals):
+#     intervals.sort(key=lambda a: (a[0], -a[1]))
+#     i = len(intervals) -1
+#     while i >= 0:
 
 
         
