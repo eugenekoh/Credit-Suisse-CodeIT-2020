@@ -133,6 +133,8 @@ def compare_min_diff(infectedName, infectedGenome, comparators):
                         if c != 0:
                             silent = False
                         diff += 1
+        if diff == 0:
+            continue
         if diff < minDiff:
             minDiff = diff
             minGenome = [clusterName]
