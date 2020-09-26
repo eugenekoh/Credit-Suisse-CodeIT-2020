@@ -30,7 +30,7 @@ def evaluate_bucket_fill():
     response = {}
     response["result"] = int(output)
     logging.info("result :{}".format(response))
-    return jsonify(image)
+    return jsonify(response)
 
 def bucket_fill(circles, polylines):
     waterXArr = []
@@ -86,13 +86,15 @@ def bucket_fill(circles, polylines):
         buckets.append(bucket)
     # get rid of overlapping buckets
     areas = 0
-    # remove_overlapping_ranges(ranges)
-    # print(ranges)
-    N = len(buckets)
+    remove_overlapping_ranges(ranges)
+    print(ranges)
+    removeElement = []
     for i in range(len(buckets)):
-        if i < N and buckets[i]["ranges"][1] not in ranges:
-            del buckets[i]
+        if buckets[i]["ranges"][1] not in ranges:
+            removeElement.append(buckets[i])
             continue
+    for element in removeElement:
+        buckets.remove(element)
     
     ## create graph from pipes start with waterX
     ## DFS via x coordinates only
@@ -130,10 +132,22 @@ def bucket_fill(circles, polylines):
                         break
     return areas
 
-# def remove_overlapping_ranges(intervals):
-#     intervals.sort(key=lambda a: (a[0], -a[1]))
-#     i = len(intervals) -1
-#     while i >= 0:
+def remove_overlapping_ranges(intervals):
+    print('here')
+    intervals.sort(key=lambda a: (a[0], -a[1]))
+    removeElement = []
+    for i in range(len(intervals)):
+        compareRange1 = intervals[i][0]
+        compareRange2 = intervals[i][1]
+        for j in range(i+1, len(intervals)):
+            remove = intervals[j]
+            range1 = intervals[j][0]
+            range2 = intervals[j][1]
+            if compareRange1 < range1 and range2 < compareRange2:
+                removeElement.append(remove)
+    for element in removeElement:
+        intervals.remove(element)
+
 
 
         
