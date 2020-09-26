@@ -14,8 +14,10 @@ def evaluate_inventory_management():
 
     results = []
     for test_case in data:
-        results.append(manage_inventory(test_case['searchItemName'], test_case['items']))
-
+        try:
+            results.append(manage_inventory(test_case['searchItemName'], test_case['items']))
+        except:
+            results.append({"searchItemName":test_case['searchItemName'],"searchResult":[]})
     logging.info("result :{}".format(results))
 
     return json.dumps(results)
@@ -70,8 +72,6 @@ def manage_inventory(itemName, items):
             curr = dp2[row][col]
         output.append(curr[1])
         outputs.append((''.join(output[::-1]),dp[-1][-1]))
-        # print(dp)
-        # print(dp2)
     outputs.sort(key = lambda x: (x[1],x[0]))
     if len(outputs) > 10:
         outputs = outputs[:10]
