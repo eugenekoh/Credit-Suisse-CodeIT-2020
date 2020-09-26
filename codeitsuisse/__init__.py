@@ -11,3 +11,4 @@ import codeitsuisse.routes.sort
 import codeitsuisse.routes.square
 import codeitsuisse.routes.contact_trace
 import codeitsuisse.routes.cluster
+import codeitsuisse.routes.bored_scribe

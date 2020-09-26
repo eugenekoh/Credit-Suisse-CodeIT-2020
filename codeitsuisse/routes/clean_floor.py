@@ -31,9 +31,6 @@ def clean_floor(arr):
     currPos = 0
     direction = 0
     while firstNonZero != lastNonZero:
-        # print(direction,currPos,firstNonZero,lastNonZero)
-        # print(arr)
-        # print("=====")
         if direction == 0:
             moves += (lastNonZero-currPos)
             for i in range(currPos+1,lastNonZero+1):
