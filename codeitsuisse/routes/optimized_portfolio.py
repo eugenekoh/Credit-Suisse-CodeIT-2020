@@ -1,4 +1,7 @@
+import json
 import logging
+import time
+
 import numpy as np
 
 import pandas as pd
@@ -13,14 +16,15 @@ logger = logging.getLogger(__name__)
 def evaluate_optimized_portfolio():
     data = request.get_json()["inputs"]
 
+    with open(f'{time.time()}.json', 'w') as fp:
+        json.dump(request.get_json(), fp)
+
     outputs = []
     for d in data:
         portfolio_value = d["Portfolio"]["Value"]
         spot_volatility = d["Portfolio"]["SpotPrcVol"]
         df = pd.DataFrame(d["IndexFutures"])
-
         outputs.append(optimized_portfolio(portfolio_value, spot_volatility, df))
-
     result = {
         "outputs": outputs
     }
