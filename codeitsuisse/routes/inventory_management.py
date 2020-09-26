@@ -1,4 +1,26 @@
-def manageInventory(itemName, items):
+import logging
+import json
+
+from flask import request
+
+from codeitsuisse import app
+
+logger = logging.getLogger(__name__)
+
+@app.route('/inventory-management', methods=['POST'])
+def evaluate_inventory_management():
+    data = request.get_json()
+    print(data)
+    result = manage_inventory(data['searchItemName'], data['items'])
+
+    logging.info("data sent for evaluation {}".format(data))
+    logging.info("result :{}".format(result))
+
+    return json.dumps(result)
+
+def manage_inventory(itemName, items):
+    original = itemName
+    # itemName = itemName.lower()
     m = len(itemName)
     outputs = []
     for item in items:
@@ -49,9 +71,11 @@ def manageInventory(itemName, items):
         # print(dp)
         # print(dp2)
     outputs.sort(key = lambda x: (x[1],x[0]))
-    return outputs
+    if len(outputs) > 10:
+        outputs = outputs[:10]
+    return {"searchItemName":original, "searchResult":[x[0] for x in outputs]}
 
 # [{"searchItemName":"Samsung Aircon","items":["Smsng Auon","Amsungh Aircon","Samsunga Airon"]}]
 
-output = manageInventory("Samsung Aircon",["Smsng Auon","Amsungh Aircon","Samsunga Airon"])
-print(output)
+# output = manage_inventory("Samsung Aircon",["Smsng Auon","Amsungh Aircon","Samsunga Airon"])
+# print(output)
