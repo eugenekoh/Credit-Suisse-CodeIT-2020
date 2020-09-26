@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 @app.route('/optimizedportfolio', methods=['POST'])
 def evaluate_optimized_portfolio():
     data = request.get_json()["inputs"]
+    logging.info("data sent for evaluation {}".format(data))
     # logger.info(request.get_json())
     outputs = []
 
@@ -26,6 +27,8 @@ def evaluate_optimized_portfolio():
     result = {
         "outputs": outputs
     }
+    logging.info("result :{}".format(result))
+
 
     return jsonify(result)
 
@@ -49,52 +52,51 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
     # max_vol = df['FuturePrcVol'].max()
     # min_vol = df['FuturePrcVol'].min()
     # df['FuturePrcVolScaled'] = df['FuturePrcVol'].apply(lambda x: min_max_scaler(x, max_vol, min_vol))
-    df['HRVolCombined'] = df['OptimalHedgeRatio'] + df['FuturePrcVol']
-    min_hr_vols = df[df["HRVolCombined"] == df["HRVolCombined"].min()].index
-    if len(min_hr_vols) == 1:
-        row = df.iloc[min_hr_vols[0]]
-        result = {
-            "HedgePositionName": row["Name"],
-            "OptimalHedgeRatio": row["OptimalHedgeRatio"],
-            "NumFuturesContract": int(row["NumFuturesContract"])
-        }
-        return result
-    
-    if len(min_hr_vols) > 1:
-        df = df.iloc[min_hr_vols]
-        min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
-        row = df.iloc[min_num_futures[0]]
-        result = {
-            "HedgePositionName": row["Name"],
-            "OptimalHedgeRatio": row["OptimalHedgeRatio"],
-            "NumFuturesContract": int(row["NumFuturesContract"])
-        }
-        return result
-    # min_hedges = df[df["OptimalHedgeRatio"] == df["OptimalHedgeRatio"].min()].index
-    # min_future_vols = df[df["FuturePrcVol"] == df["FuturePrcVol"].min()].index
-
-    # total = min_hedges.union(min_future_vols)
-    # if len(total) == 1:
-    #     row = df.iloc[total[0]]
-    #     num = num_futures_contract(row["OptimalHedgeRatio"], portfolio_value, row["IndexFuturePrice"], row["Notional"])
+    # df['HRVolCombined'] = df['OptimalHedgeRatio'] + df['FuturePrcVol']
+    # min_hr_vols = df[df["HRVolCombined"] == df["HRVolCombined"].min()].index
+    # if len(min_hr_vols) == 1:
+    #     row = df.iloc[min_hr_vols[0]]
     #     result = {
     #         "HedgePositionName": row["Name"],
     #         "OptimalHedgeRatio": row["OptimalHedgeRatio"],
-    #         "NumFuturesContract": int(num)
+    #         "NumFuturesContract": int(row["NumFuturesContract"])
     #     }
     #     return result
+    
+    # if len(min_hr_vols) > 1:
+    #     df = df.iloc[min_hr_vols]
+    #     min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
+    #     row = df.iloc[min_num_futures[0]]
+    #     result = {
+    #         "HedgePositionName": row["Name"],
+    #         "OptimalHedgeRatio": row["OptimalHedgeRatio"],
+    #         "NumFuturesContract": int(row["NumFuturesContract"])
+    #     }
+    #     return result
+    min_hedges = df[df["OptimalHedgeRatio"] == df["OptimalHedgeRatio"].min()].index
+    min_future_vols = df[df["FuturePrcVol"] == df["FuturePrcVol"].min()].index
 
-    # df = df.iloc[total]
+    total = min_hedges.union(min_future_vols)
+    if len(total) == 1:
+        row = df.iloc[total[0]]
+        result = {
+            "HedgePositionName": row["Name"],
+            "OptimalHedgeRatio": row["OptimalHedgeRatio"],
+            "NumFuturesContract": int(row["NumFuturesContract"])
+        }
+        return result
 
-    # min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
-    # row = min_num_futures.iloc[0]
+    df = df.iloc[total]
+
+    min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
+    row = min_num_futures.iloc[0]
     # if len(min_num_futures.index) > 1:
     #     logger.error("unable to decide by num_futures")
 
-    # hedge_result = {
-    #     "HedgePositionName": row["Name"],
-    #     "OptimalHedgeRatio": row["OptimalHedgeRatio"],
-    #     "NumFuturesContract": int(row["NumFuturesContract"])
-    # }
+    hedge_result = {
+        "HedgePositionName": row["Name"],
+        "OptimalHedgeRatio": row["OptimalHedgeRatio"],
+        "NumFuturesContract": int(row["NumFuturesContract"])
+    }
 
-    # return hedge_result
+    return hedge_result
