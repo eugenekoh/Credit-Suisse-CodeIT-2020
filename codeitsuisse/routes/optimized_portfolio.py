@@ -3,7 +3,6 @@ import logging
 import time
 
 import numpy as np
-from sklearn import preprocessing
 import pandas as pd
 from flask import request, jsonify
 
@@ -36,8 +35,10 @@ def hedge_ratio(corelation, spot_vol, futures_vol):
 
 
 def num_futures_contract(hedge_ratio, portfolio_val, futures_price, notional_val):
-    return np.round(hedge_ratio * portfolio_val / (futures_price * notional_val))
+    return np.round(hedge_ratio * portfolio_val / (futures_price * notional_val))    
 
+def min_max_scaler(val, maximum, minimum):
+    return (val-minimum)/(maximum-minimum)
 
 def optimized_portfolio(portfolio_value, spot_volatility, df):
     df["OptimalHedgeRatio"] = hedge_ratio(df["CoRelationCoefficient"].values, spot_volatility,
@@ -45,8 +46,9 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
     df["NumFuturesContract"] = num_futures_contract(df["OptimalHedgeRatio"].values, portfolio_value,
                                                     df["IndexFuturePrice"].values,
                                                     df["Notional"].values)
-    min_max_scaler = preprocessing.MinMaxScaler()
-    df['FuturePrcVolScaled'] = min_max_scaler.fit_transform(df['FuturePrcVol'].values)
+    max_vol = df['FuturePrcVol'].max()
+    min_vol = df['FuturePrcVol'].min()
+    df['FuturePrcVolScaled'] = df['FuturePrcVol'].apply(lambda x: min_max_scaler(x, max_vol, min_vol))
     df['HRVolCombined'] = df['OptimalHedgeRatio'] + df['FuturePrcVolScaled']
 
     min_hr_vols = df[df["HRVolCombined"] == df["HRVolCombined"].min()].index
