@@ -35,8 +35,7 @@ def evaluate_bucket_fill():
 def bucket_fill(circles, polylines):
     waterXArr = []
     for w in circles:
-        water = eval(w)
-        xWater = water["@cx"]
+        xWater = water[0]
         waterXArr.append(int(xWater))
     # waterY = int(circles["@cy"])
     buckets = []
@@ -134,7 +133,6 @@ def bucket_fill(circles, polylines):
     return areas
 
 def remove_overlapping_ranges(intervals):
-    print('here')
     intervals.sort(key=lambda a: (a[0], -a[1]))
     removeElement = []
     for i in range(len(intervals)):
@@ -147,7 +145,8 @@ def remove_overlapping_ranges(intervals):
             if compareRange1 < range1 and range2 < compareRange2:
                 removeElement.append(remove)
     for element in removeElement:
-        intervals.remove(element)
+        if element in intervals:
+            intervals.remove(element)
 
 
 
