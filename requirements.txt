@@ -34,3 +34,5 @@ sympy
 
 # english dict
 pyenchant
+# olympiad of babylon
+ortools
