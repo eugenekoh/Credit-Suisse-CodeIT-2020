@@ -65,40 +65,30 @@ def decrypt(message):
     # print(len(candidates_filtered),candidates_filtered)
 
     # get decrypted message
-    # best_count = 0
-    # best_cand = None
-    # for cand, count in candidates_filtered.items():
-    #     curr_count = wordBreak2(cand[:40])
-    #     if curr_count > best_count:
-    #         best_count = curr_count
-    #         best_cand = cand
+    best_count = 0
+    best_cand = None
+    THRESHOLD = 0.6
+    for cand, count in candidates_filtered.items():
+        n = len(cand)
+        p = int(THRESHOLD*n)
+        curr_count = wordBreak2(cand[:p])
+        if curr_count > best_count:
+            best_count = curr_count
+            best_cand = cand
             
-    # # get word breaks
-    # if best_cand is not None:
-    #     try:
-    #         toReturn = ' '.join(wordninja.split(best_cand))
-    #         return toReturn, candidates_filtered[best_cand]
-    #     except:
-    #         return best_cand, candidates_filtered[best_cand]
-    # try:
-    #     toReturn = ' '.join(wordninja.split(message))
-    #     return toReturn, 0
-    # except:
-    #     return message, 0
-
-    
-
-    for cand, cand_count in candidates_filtered.items():
+    # get word breaks
+    if best_cand is not None:
         try:
-            toReturn = ' '.join(wordninja.split(cand))
-            return toReturn, cand_count
+            toReturn = ' '.join(wordninja.split(best_cand))
+            return toReturn, candidates_filtered[best_cand]
         except:
-            pass
+            return best_cand, candidates_filtered[best_cand]
     try:
         toReturn = ' '.join(wordninja.split(message))
         return toReturn, 0
     except:
         return message, 0
+
 
 def getShift(s):
     centers = 2*len(s)-1
