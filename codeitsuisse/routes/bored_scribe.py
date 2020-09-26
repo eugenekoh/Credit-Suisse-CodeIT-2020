@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 def evaluate_bored_scribe():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
+    print(' ')
     results = []
     for test_case in data:
         message, count = decrypt(test_case['encryptedText'])
