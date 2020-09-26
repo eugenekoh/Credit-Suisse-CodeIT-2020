@@ -1,4 +1,3 @@
-import enchant
 import logging
 import json
 import nltk
