@@ -76,9 +76,11 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
     min_hedges = df[df["OptimalHedgeRatio"] == df["OptimalHedgeRatio"].min()].index
     min_future_vols = df[df["FuturePrcVol"] == df["FuturePrcVol"].min()].index
 
-    total = min_hedges.union(min_future_vols)
-    if len(total) == 1:
-        row = df.iloc[total[0]]
+    # try to find intersection
+    intersection = min_hedges.intersection(min_future_vols)
+
+    if len(intersection) == 1:
+        row = df.iloc[intersection[0]]
         result = {
             "HedgePositionName": row["Name"],
             "OptimalHedgeRatio": row["OptimalHedgeRatio"],
@@ -86,17 +88,25 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
         }
         return result
 
-    df = df.iloc[total]
+    elif len(intersection) > 1:
+        df = df.iloc[intersection]
+        min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
+        row = min_num_futures.iloc[0]
+        result = {
+            "HedgePositionName": row["Name"],
+            "OptimalHedgeRatio": row["OptimalHedgeRatio"],
+            "NumFuturesContract": int(row["NumFuturesContract"])
+        }
+        return result
 
-    min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
-    row = min_num_futures.iloc[0]
-    # if len(min_num_futures.index) > 1:
-    #     logger.error("unable to decide by num_futures")
-
-    hedge_result = {
-        "HedgePositionName": row["Name"],
-        "OptimalHedgeRatio": row["OptimalHedgeRatio"],
-        "NumFuturesContract": int(row["NumFuturesContract"])
-    }
-
-    return hedge_result
+    else:
+        total = min_hedges.union(min_future_vols)
+        df = df.iloc[total]
+        min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
+        row = min_num_futures.iloc[0]
+        result = {
+            "HedgePositionName": row["Name"],
+            "OptimalHedgeRatio": row["OptimalHedgeRatio"],
+            "NumFuturesContract": int(row["NumFuturesContract"])
+        }
+        return result
