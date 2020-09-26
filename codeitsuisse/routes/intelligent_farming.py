@@ -2,7 +2,7 @@ import json
 import logging
 from collections import Counter
 
-from flask import request
+from flask import request, jsonify
 
 from codeitsuisse import app
 
@@ -20,7 +20,7 @@ def evaluate_intelligent_farming():
         item["geneSequence"] = intelligent_farming(gene_seq)
 
     logging.info(f"intelligent-farming result: {data}")
-    return json.dumps(data)
+    return jsonify(data)
 
 
 def intelligent_farming(gene_seq):
