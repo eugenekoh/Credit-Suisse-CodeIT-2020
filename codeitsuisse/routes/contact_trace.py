@@ -20,7 +20,7 @@ def evaluate_contact_tracing():
     infectedGenome = infected.get("genome").split("-")
     originName = origin.get("name")
     originGenome = origin.get("genome").split("-")
-    response = []
+    response = set()
 
     clusters = {}
     clusters[originName] = originGenome
@@ -55,7 +55,7 @@ def evaluate_contact_tracing():
             clusters[clusterName] = element
     
     logging.info("My result :{}".format(response))
-    return jsonify(response)
+    return jsonify(list(response))
 
 def find_path(originName, originGenome, node, clusters, s, response):
     nextEntriesGenome, nextEntriesSilent = compare_min_diff(node, clusters)
@@ -66,14 +66,14 @@ def find_path(originName, originGenome, node, clusters, s, response):
         if clusterName == originName:
             if clusterSilent:
                 sol = "{}* -> {}".format(s, originName)
-                response.append(sol)
+                response.add(sol)
             else:
                 sol = "{} -> {}".format(s, originName)
-                response.append(sol)
+                response.add(sol)
         # not end of the trace so need continue tracing 
         else:
             if node == originGenome:
-                response.append(s)
+                response.addd(s)
                 continue
             element = clusters.pop(clusterName)
             if clusterSilent:
