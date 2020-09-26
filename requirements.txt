@@ -37,3 +37,6 @@ sympy
 
 # olympiad of babylon
 ortools
+
+# optimized portfolio
+pandas
