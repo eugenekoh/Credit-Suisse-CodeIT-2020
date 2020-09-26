@@ -108,7 +108,7 @@ class Solution:
 
     def get_rolls(self):
         win_rolls = self.get_win_rolls()
-        lose_rolls = self.get_lose_rolls()
+        lose_rolls = self.get_lose_rolls(len(win_rolls))
 
         if len(win_rolls) >= len(lose_rolls):
             logger.error("found shortest path for lose rolls")
@@ -120,8 +120,21 @@ class Solution:
         # final result
         return result
 
-    def get_lose_rolls(self):
-        path = next(nx.all_simple_paths(self.G, 1, len(self.board)))
+    def get_lose_rolls(self, win_length):
+        path = []
+        i = 0
+        while len(path) < win_length * 2:
+            path.append(i + 1)
+            cur = self.board[i]
+            if cur.type == JumpType.End:
+                break
+            elif cur.type in [JumpType.Ladder, JumpType.Snake]:
+                i = cur.next - 1
+            elif cur.type == JumpType.Smoke:
+                i -= 1
+            else:
+                i += 1
+
         return self.convert_path_to_rolls(path)
 
     def get_win_rolls(self):
@@ -147,4 +160,3 @@ class Solution:
         turns.append(current_roll)
 
         return [t for t in turns if t]
-
