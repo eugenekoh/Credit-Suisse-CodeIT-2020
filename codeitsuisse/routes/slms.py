@@ -48,6 +48,7 @@ def evaluate_slsm():
     s = Solution(n, players, jumps)
     result = s.get_rolls()
 
+    logger.info(result)
     return jsonify(result)
 
 
