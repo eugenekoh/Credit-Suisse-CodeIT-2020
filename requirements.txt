@@ -41,3 +41,6 @@ ortools
 pandas
 numpy
 
+# bucket fill
+xmltodict
+
