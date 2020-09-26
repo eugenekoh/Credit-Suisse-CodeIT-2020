@@ -22,6 +22,8 @@ def evaluate_bored_scribe():
 
 def decrypt(message):
     start, end, count = getShift(message)
+    if count == 0:
+        return message, 0
     candidates = {}
     output = [c for c in message]
     # generate candidates
