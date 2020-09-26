@@ -34,6 +34,8 @@ def clean_floor(nums):
     while left < right:
         value = nums[left]
         i = value
+        if value == 0:
+            i = 1
         if value % 2 == 0:
             moves += (value*2)
         else:
@@ -45,7 +47,6 @@ def clean_floor(nums):
             else:
                 nums[left+1]+=1
             i -= 1
-        print(nums, moves, left)
         left += 1
     if nums[right] != 0:
         value = nums[left]
