@@ -73,8 +73,16 @@ def decrypt(message):
             best_count = curr_count
             best_cand = cand
     if best_cand is not None:
-        return ' '.join(wordninja.split(best_cand)), candidates_filtered[best_cand] 
-    return ' '.join(wordninja.split(best_cand)), 0
+        try:
+            toReturn = ' '.join(wordninja.split(best_cand))
+            return toReturn, candidates_filtered[best_cand]
+        except:
+            return best_cand, candidates_filtered[best_cand]
+    try:
+        toReturn = ' '.join(wordninja.split(best_cand))
+        return toReturn, 0
+    except:
+        return message, 0
 
     
 
