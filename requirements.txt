@@ -34,7 +34,7 @@ sympy
 # english dict
 nltk
 english-words
-
+wordninja
 # olympiad of babylon
 ortools
 

@@ -6,9 +6,10 @@ import json
 # except:
 #     pass
 # from nltk.corpus import wordnet
+import wordninja
 from english_words import english_words_set
 from flask import request, jsonify
-
+from collections import deque
 from codeitsuisse import app
 import random
 
@@ -63,30 +64,31 @@ def decrypt(message):
     # return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
 
-    # final_cand = None
+    # get decrypted message
     best_count = 0
     best_cand = None
+    THRESHOLD = 0.4
     for cand, count in candidates_filtered.items():
-        curr_count = wordBreak2(cand[:40])
+        n = len(cand)
+        p = int(THRESHOLD*n)
+        curr_count = wordBreak2(cand[:p])
         if curr_count > best_count:
             best_count = curr_count
             best_cand = cand
+            
+    # get word breaks
     if best_cand is not None:
-        return best_cand, candidates_filtered[best_cand] 
-    return message, 0
-    # tmp = final_cand
-    # final_count = 0
-    # while tmp != message:
-    #     final_count += 1
-    #     shift = sum([ord(c) for c in tmp[start:end]]) + count
-    #     tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
-    #     if tmp == message:
-    #         break
-    # if final_cand is None:
-    #     return message, 0
+        try:
+            toReturn = ' '.join(wordninja.split(best_cand))
+            return toReturn, candidates_filtered[best_cand]
+        except:
+            return best_cand, candidates_filtered[best_cand]
+    try:
+        toReturn = ' '.join(wordninja.split(message))
+        return toReturn, 0
+    except:
+        return message, 0
 
-    # else:
-    #     return final_cand, final_count
 
 def getShift(s):
     centers = 2*len(s)-1
@@ -163,6 +165,22 @@ def wordBreak2(s):
                         count += 1
                         break
     return count
+
+def breakMessage(fringe, fringes, s):
+    print(s)
+    if s == '':
+        fringes.append(fringe)
+        return
+    
+    for i in range(1,len(s)):
+        if s[:i] in english_words_set:
+            print(s[:i])
+            breakMessage(fringe + [s[:i]], fringes, s[i:])
+        else:
+            break
+
+    
+
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
