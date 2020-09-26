@@ -35,7 +35,7 @@ def decrypt(message):
     candidates = {}
     output = [c for c in message]
     # generate candidates
-    for i in range(25):
+    for i in range(26):
         output = [chr((ord(c)-97 + 1) % 26 + 97) for c in output]
         candidates[''.join(output)] = True
     # print(len(candidates),candidates)
@@ -67,7 +67,7 @@ def decrypt(message):
     # get decrypted message
     best_count = 0
     best_cand = None
-    THRESHOLD = 0.45
+    THRESHOLD = 0.4
     for cand, count in candidates_filtered.items():
         n = len(cand)
         p = int(THRESHOLD*n)
@@ -181,7 +181,7 @@ def wordBreak2(s):
                 dp[i][j] = False
             elif i > j:
                 continue
-            elif s[i:j+1] in english_words_set:
+            elif s[i:j+1] in english_words_set and j+1-i > 3:
                 dp[i][j] = True
                 count += 1
             else:
