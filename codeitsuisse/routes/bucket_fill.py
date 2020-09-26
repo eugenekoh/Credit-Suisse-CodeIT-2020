@@ -17,9 +17,6 @@ from flask import request, jsonify
 import xmltodict
 import sys
 
-from quicksect import IntervalNode
-
-
 from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
