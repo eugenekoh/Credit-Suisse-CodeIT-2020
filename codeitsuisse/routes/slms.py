@@ -123,7 +123,7 @@ class Solution:
     def get_lose_rolls(self, win_length):
         path = []
         i = 0
-        while len(path) < win_length * 2:
+        while len(path) < win_length * 4:
             path.append(i + 1)
             cur = self.board[i]
             if cur.type == JumpType.End:
@@ -154,7 +154,7 @@ class Solution:
             elif prev_node.type in [JumpType.Ladder, JumpType.Snake]:
                 pass
             elif prev_node.type in [JumpType.Smoke, JumpType.Mirror]:
-                current_roll.append(path[i] - path[i - 1])
+                current_roll.append(abs(path[i] - path[i - 1]))
 
             i += 1
         turns.append(current_roll)
