@@ -154,7 +154,7 @@ class Solution:
             elif prev_node.type in [JumpType.Ladder, JumpType.Snake]:
                 pass
             elif prev_node.type in [JumpType.Smoke, JumpType.Mirror]:
-                current_roll.append(path[i] - path[i - 1])
+                current_roll.append(abs(path[i] - path[i - 1]))
 
             i += 1
         turns.append(current_roll)
