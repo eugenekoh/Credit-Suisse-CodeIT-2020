@@ -6,9 +6,10 @@ import json
 # except:
 #     pass
 # from nltk.corpus import wordnet
+import wordninja
 from english_words import english_words_set
 from flask import request, jsonify
-
+from collections import deque
 from codeitsuisse import app
 import random
 
@@ -72,8 +73,11 @@ def decrypt(message):
             best_count = curr_count
             best_cand = cand
     if best_cand is not None:
-        return best_cand, candidates_filtered[best_cand] 
-    return message, 0
+        return ' '.join(wordninja.split(best_cand)), candidates_filtered[best_cand] 
+    return ' '.join(wordninja.split(best_cand)), 0
+
+    
+
     # tmp = final_cand
     # final_count = 0
     # while tmp != message:
@@ -163,6 +167,22 @@ def wordBreak2(s):
                         count += 1
                         break
     return count
+
+def breakMessage(fringe, fringes, s):
+    print(s)
+    if s == '':
+        fringes.append(fringe)
+        return
+    
+    for i in range(1,len(s)):
+        if s[:i] in english_words_set:
+            print(s[:i])
+            breakMessage(fringe + [s[:i]], fringes, s[i:])
+        else:
+            break
+
+    
+
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
