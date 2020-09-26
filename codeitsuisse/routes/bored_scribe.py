@@ -22,6 +22,7 @@ def evaluate_bored_scribe():
 
 def decrypt(message):
     start, end, count = getShift(message)
+    # print(start,end)
     if count == 0:
         return message, 0
     candidates = {}
@@ -47,6 +48,8 @@ def decrypt(message):
     for cand, _ in candidates_filtered.items():
         if wordBreak2(cand):
             final_cand = cand
+    if final_cand == None:
+        return message, 0
     tmp = final_cand
     final_count = 0
     while tmp != message:
@@ -136,3 +139,4 @@ def wordBreak2(s):
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
+# print(getShift('abcdefghh'))
