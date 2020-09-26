@@ -65,55 +65,55 @@ def decrypt(message):
     # print(len(candidates_filtered),candidates_filtered)
 
     # get decrypted message
-    # best_count = 0
-    # best_cand = None
-    # THRESHOLD = 0.4
-    # for cand, count in candidates_filtered.items():
-    #     n = len(cand)
-    #     p = int(THRESHOLD*n)
-    #     curr_count = wordBreak2(cand[:p])
-    #     if curr_count > best_count:
-    #         best_count = curr_count
-    #         best_cand = cand
-            
-    # # get word breaks
-    # if best_cand is not None:
-    #     try:
-    #         toReturn = ' '.join(wordninja.split(best_cand))
-    #         return toReturn, candidates_filtered[best_cand]
-    #     except:
-    #         return best_cand, candidates_filtered[best_cand]
-    # try:
-    #     toReturn = ' '.join(wordninja.split(message))
-    #     return toReturn, 0
-    # except:
-    #     return message, 0
-
-    best_cand = None
     best_count = 0
-    enc_count = 0
+    best_cand = None
+    THRESHOLD = 0.45
     for cand, count in candidates_filtered.items():
-        try:
-            cand_split = wordninja.split(cand)
-            num_eng = 0
-            for word in cand_split:
-                if len(word) > 3:
-                    num_eng += 1
-            if num_eng > len(cand_split) // 2:
-                return ' '.join(cand_split), count
-            if num_eng > best_count:
-                best_count = num_eng
-                best_cand = ' '.join(cand_split)
-                enc_count = count
-        except:
-            pass
+        n = len(cand)
+        p = int(THRESHOLD*n)
+        curr_count = wordBreak2(cand[:p])
+        if curr_count > best_count:
+            best_count = curr_count
+            best_cand = cand
+            
+    # get word breaks
     if best_cand is not None:
-        return best_cand, enc_count
+        try:
+            toReturn = ' '.join(wordninja.split(best_cand))
+            return toReturn, candidates_filtered[best_cand]
+        except:
+            return best_cand, candidates_filtered[best_cand]
     try:
         toReturn = ' '.join(wordninja.split(message))
         return toReturn, 0
     except:
         return message, 0
+
+    # best_cand = None
+    # best_count = 0
+    # enc_count = 0
+    # for cand, count in candidates_filtered.items():
+    #     try:
+    #         cand_split = wordninja.split(cand)
+    #         num_eng = 0
+    #         for word in cand_split:
+    #             if len(word) > 3:
+    #                 num_eng += 1
+    #         if num_eng > len(cand_split) // 2:
+    #             return ' '.join(cand_split), count
+    #         if num_eng > best_count:
+    #             best_count = num_eng
+    #             best_cand = ' '.join(cand_split)
+    #             enc_count = count
+    #     except:
+    #         pass
+    # if best_cand is not None:
+    #     return best_cand, enc_count
+    # try:
+    #     toReturn = ' '.join(wordninja.split(message))
+    #     return toReturn, 0
+    # except:
+    #     return message, 0
 
 
 def getShift(s):
