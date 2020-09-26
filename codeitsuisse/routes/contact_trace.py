@@ -37,10 +37,10 @@ def evaluate_contact_tracing():
         if clusterName == originName:
             if clusterSilent:
                 s = "{}* -> {}".format(infectedName, originName)
-                response.append(s)
+                response.add(s)
             else:
                 s = "{} -> {}".format(infectedName, originName)
-                response.append(s)
+                response.add(s)
         # not end of the trace so need continue tracing 
         else:
             element = clusters.pop(clusterName)
@@ -49,6 +49,9 @@ def evaluate_contact_tracing():
                 s = "{}* -> {}".format(infectedName, clusterName)
             else:
                 s = "{} -> {}".format(infectedName, clusterName)
+            if element == originGenome:
+                response.add(s)
+                continue
             # find all paths starting with clusterName
             find_path(originName, originGenome, element, clusters, s, response)
             # add back cluster name for next iteration
