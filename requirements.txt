@@ -33,6 +33,7 @@ sympy
 
 # english dict
 nltk
+english-words
 
 # olympiad of babylon
 ortools

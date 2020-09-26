@@ -1,11 +1,12 @@
 import logging
 import json
-import nltk
-try:
-    nltk.download("wordnet")
-except:
-    pass
-from nltk.corpus import wordnet
+# import nltk
+# try:
+#     nltk.download("wordnet")
+# except:
+#     pass
+# from nltk.corpus import wordnet
+from english_words import english_words_set
 from flask import request, jsonify
 
 from codeitsuisse import app
@@ -63,10 +64,14 @@ def decrypt(message):
     # print(len(candidates_filtered),candidates_filtered)
 
     # final_cand = None
+    best_count = 0
+    best_cand = None
     for cand, count in candidates_filtered.items():
-        if wordBreak2(cand[:20]):
-            return cand, cand_count
-    return message, 0
+        curr_count = wordBreak2(cand[:20])
+        if curr_count > best_count:
+            best_count = curr_count
+            best_cand = cand
+    return best_cand, candidates_filtered[best_cand]
     # tmp = final_cand
     # final_count = 0
     # while tmp != message:
@@ -139,25 +144,23 @@ def wordBreak(s, wordDict):
 
 def wordBreak2(s):
     dp = [[False]*len(s) for i in range(len(s))]
+    count = 0
     for i in range(len(s)-1,-1,-1):
         for j in range(len(s)):
             if i == j:
-                dp[i][j] = True if (s[i] == 'a' or s[i] == 'i') else False
+                dp[i][j] = False
             elif i > j:
                 continue
-            elif len(wordnet.synsets(s[i:j+1])) > 0:
+            elif s[i:j+1] in english_words_set:
                 dp[i][j] = True
+                count += 1
             else:
                 for k in range(i,j+1):
                     if dp[i][k] and dp[k+1][j]:
                         dp[i][j] = True
+                        count += 1
                         break
-    count = 0
-    for l in dp:
-        for el in l:
-            if el:
-                count += 1
-    return count > int(0.2*len(s))
+    return count
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
