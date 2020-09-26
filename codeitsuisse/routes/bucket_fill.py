@@ -33,11 +33,13 @@ def evaluate_bucket_fill():
 def bucket_fill(circles, polylines):
     waterXArr = []
     for water in circles:
-        waterXArr.append(int(water["@cx"]))
+        xWater = water["@cx"]
+        waterXArr.append(int(xWater))
     # waterY = int(circles["@cy"])
     buckets = []
     coordRanges = []
     pipesX = []
+    ranges = []
     for bucket in polylines:
         points = bucket["@points"].split(" ")
         # means is a pipe
@@ -78,12 +80,15 @@ def bucket_fill(circles, polylines):
         bucket["area"] = area
         bucket["ranges"] = coordRange
         coordRanges.append(coordRange)
+        ranges.append(btmRange)
         buckets.append(bucket)
-    # TODO: get rid of overlapping buckets
+    # get rid of overlapping buckets
     areas = 0
-    # remove overlapping buckets
+    # remove_overlapping_ranges(ranges)
+    # print(ranges)
+    N = len(buckets)
     for i in range(len(buckets)):
-        if buckets[i]["ranges"] not in coordRanges:
+        if i < N and buckets[i]["ranges"][1] not in ranges:
             del buckets[i]
             continue
     
