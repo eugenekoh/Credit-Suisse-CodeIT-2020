@@ -34,7 +34,7 @@ def evaluate_optimized_portfolio():
 
 
 def hedge_ratio(corelation, spot_vol, futures_vol):
-    return np.round(corelation * spot_vol / futures_vol, 3)
+    return corelation * spot_vol / futures_vol
 
 
 def num_futures_contract(hedge_ratio, portfolio_val, futures_price, notional_val):
@@ -49,6 +49,7 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
     df["NumFuturesContract"] = num_futures_contract(df["OptimalHedgeRatio"].values, portfolio_value,
                                                     df["IndexFuturePrice"].values,
                                                     df["Notional"].values)
+    df["OptimalHedgeRatio"] = df["OptimalHedgeRatio"].round(3)
     # max_vol = df['FuturePrcVol'].max()
     # min_vol = df['FuturePrcVol'].min()
     # df['FuturePrcVolScaled'] = df['FuturePrcVol'].apply(lambda x: min_max_scaler(x, max_vol, min_vol))
@@ -87,7 +88,7 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
             "NumFuturesContract": int(row["NumFuturesContract"])
         }
         return result
-
+        
     elif len(intersection) > 1:
         df = df.iloc[intersection]
         min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
