@@ -31,8 +31,10 @@ def evaluate_bucket_fill():
     return jsonify(response)
 
 def bucket_fill(circles, polylines):
-    waterX = int(circles["@cx"])
-    waterY = int(circles["@cy"])
+    waterXArr = []
+    for water in circles:
+        waterXArr.append(int(water["@cx"]))
+    # waterY = int(circles["@cy"])
     buckets = []
     coordRanges = []
     pipesX = []
@@ -87,38 +89,42 @@ def bucket_fill(circles, polylines):
     
     ## create graph from pipes start with waterX
     ## DFS via x coordinates only
-    stack = []
-    for i in range(len(buckets)):
-        bucketRange = buckets[i]["ranges"]
-        if bucketRange[0][0] <= waterX <= bucketRange[0][1]:
-            areas += buckets[i]["area"]
-            stack.append((bucketRange[1][0], bucketRange[1][1]))
-            del buckets[i]
-            break
-    while stack:
-        bucketRange = stack.pop()
-        btmPipe = 0
-        found = False
-        for i in range(len(pipesX)):
-            btmPipe = pipesX[i][1]
-            if bucketRange[0] <= pipesX[i][0] <= bucketRange[1]:
-                found = True
-                del pipesX[i]
+    for waterX in waterXArr:
+        stack = []
+        for i in range(len(buckets)):
+            bucketRange = buckets[i]["ranges"]
+            if bucketRange[0][0] <= waterX <= bucketRange[0][1]:
+                areas += buckets[i]["area"]
+                stack.append((bucketRange[1][0], bucketRange[1][1]))
+                del buckets[i]
                 break
-            elif bucketRange[0] <= pipesX[i][1] <= bucketRange[1]:
-                found = True
-                btmPipe = pipesX[i][0]
-                del pipesX[i]
-                break
-        if found:
-            for i in range(len(buckets)):
-                bucketRange = buckets[i]["ranges"]
-                if bucketRange[0][0] <= btmPipe <= bucketRange[0][1]:
-                    areas += buckets[i]["area"]
-                    stack.append((bucketRange[1][0], bucketRange[1][1]))
-                    del buckets[i]
+        while stack:
+            bucketRange = stack.pop()
+            btmPipe = 0
+            found = False
+            for i in range(len(pipesX)):
+                btmPipe = pipesX[i][1]
+                if bucketRange[0] <= pipesX[i][0] <= bucketRange[1]:
+                    found = True
+                    del pipesX[i]
                     break
+                elif bucketRange[0] <= pipesX[i][1] <= bucketRange[1]:
+                    found = True
+                    btmPipe = pipesX[i][0]
+                    del pipesX[i]
+                    break
+            if found:
+                for i in range(len(buckets)):
+                    bucketRange = buckets[i]["ranges"]
+                    if bucketRange[0][0] <= btmPipe <= bucketRange[0][1]:
+                        areas += buckets[i]["area"]
+                        stack.append((bucketRange[1][0], bucketRange[1][1]))
+                        del buckets[i]
+                        break
     return areas
+
+
+
         
 
 

@@ -18,3 +18,4 @@ import codeitsuisse.routes.bored_scribe
 import codeitsuisse.routes.magical_fruit_basket
 import codeitsuisse.routes.slms
 import codeitsuisse.routes.bucket_fill
+import codeitsuisse.routes.yin_yang
