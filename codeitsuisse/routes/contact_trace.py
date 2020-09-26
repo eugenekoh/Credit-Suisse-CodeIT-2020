@@ -52,7 +52,7 @@ def evaluate_contact_tracing():
     #         if 
                 
         
-    firstEntriesGenome, firstEntriesSilent = compare_min_diff(infectedName, infectedGenome, clusters)
+    firstEntriesGenome, firstEntriesSilent, nextEntriesDiff = compare_min_diff(infectedName, infectedGenome, clusters)
     for i in range(len(firstEntriesGenome)):
         clusterName = firstEntriesGenome[i]
         clusterSilent = firstEntriesSilent[i]
@@ -84,10 +84,12 @@ def evaluate_contact_tracing():
     return jsonify(list(response))
 
 def find_path(name, originName, originGenome, node, clusters, s, response):
-    nextEntriesGenome, nextEntriesSilent = compare_min_diff(name, node, clusters)
+    nextEntriesGenome, nextEntriesSilent, nextEntriesDiff = compare_min_diff(name, node, clusters)
     for i in range(len(nextEntriesGenome)):
         clusterName = nextEntriesGenome[i]
         clusterSilent = nextEntriesSilent[i]
+        if nextEntriesDiff == 0:
+            continue
         # means end of the trace as ends with origin
         if clusterName == originName:
             if clusterSilent:
@@ -118,6 +120,7 @@ def compare_min_diff(infectedName, infectedGenome, comparators):
     minDiff = sys.maxsize 
     minGenome = []
     minSilent = []
+    diffArr = []
     for clusterName, clusterGenome in comparators.items():
         if clusterName == infectedName:
             continue
@@ -142,6 +145,7 @@ def compare_min_diff(infectedName, infectedGenome, comparators):
                 minSilent = [False]
             else:
                 minSilent = [True]
+            diffArr.append(diff)
         elif diff == minDiff:
             if silentCount <= 1:
                 silent = False
@@ -150,7 +154,8 @@ def compare_min_diff(infectedName, infectedGenome, comparators):
                 minSilent.append(False)
             else:
                 minSilent.append(True)
-    return minGenome, minSilent
+            diffArr.append(diff)
+    return minGenome, minSilent, diffArr
         
 
 
