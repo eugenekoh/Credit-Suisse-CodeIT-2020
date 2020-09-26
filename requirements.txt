@@ -39,6 +39,5 @@ ortools
 
 # optimized portfolio
 pandas
-
 numpy
 
