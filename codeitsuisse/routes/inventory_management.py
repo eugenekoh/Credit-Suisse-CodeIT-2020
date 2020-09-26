@@ -14,10 +14,7 @@ def evaluate_inventory_management():
 
     results = []
     for test_case in data:
-        try:
-            results.append(manage_inventory(test_case['searchItemName'], test_case['items']))
-        except:
-            results.append({"searchItemName":test_case['searchItemName'],"searchResult":[]})
+        results.append(manage_inventory(test_case['searchItemName'], test_case['items']))
     logging.info("result :{}".format(results))
 
     return json.dumps(results)
