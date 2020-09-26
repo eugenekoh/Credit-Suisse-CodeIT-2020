@@ -12,8 +12,8 @@ from codeitsuisse.routes.intelligent_farming import intelligent_farming, get_dri
 )
 def test_intelligent_farming(gene_seq, expected):
     actual = intelligent_farming(gene_seq)
+    print(actual)
     actual_score = get_dri_score(actual)
-
     expected_score = get_dri_score(expected)
 
-    assert actual_score == expected_score
+    assert actual_score >= expected_score

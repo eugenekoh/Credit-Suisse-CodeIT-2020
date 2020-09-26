@@ -50,14 +50,14 @@ def evaluate_contact_tracing():
             else:
                 s = "{} -> {}".format(infectedName, clusterName)
             # find all paths starting with clusterName
-            find_path(originName, element, clusters, s, response)
+            find_path(originName, originGenome, element, clusters, s, response)
             # add back cluster name for next iteration
             clusters[clusterName] = element
     
     logging.info("My result :{}".format(response))
     return jsonify(response)
 
-def find_path(originName, node, clusters, s, response):
+def find_path(originName, originGenome, node, clusters, s, response):
     nextEntriesGenome, nextEntriesSilent = compare_min_diff(node, clusters)
     for i in range(len(nextEntriesGenome)):
         clusterName = nextEntriesGenome[i]
@@ -65,20 +65,23 @@ def find_path(originName, node, clusters, s, response):
         # means end of the trace as ends with origin
         if clusterName == originName:
             if clusterSilent:
-                s = "{}* -> {}".format(s, originName)
-                response.append(s)
+                sol = "{}* -> {}".format(s, originName)
+                response.append(sol)
             else:
-                s = "{} -> {}".format(s, originName)
-                response.append(s)
+                sol = "{} -> {}".format(s, originName)
+                response.append(sol)
         # not end of the trace so need continue tracing 
         else:
+            if node == originGenome:
+                response.append(s)
+                continue
             element = clusters.pop(clusterName)
             if clusterSilent:
                 s = "{}* -> {}".format(s, clusterName)
             else:
                 s = "{} -> {}".format(s, clusterName)
             # find all paths starting with clusterName
-            find_path(clusterName, originName, clusters, s)
+            find_path(originName, originGenome, element, clusters, s, response)
             # add back cluster name for next iteration
             clusters[clusterName] = element
 
@@ -121,15 +124,6 @@ def compare_min_diff(infectedGenome, comparators):
         
 
 
-    # minDiff = sys.maxsize 
-    # minGenome = ""
-    # minSilent = True
-    # clusters = {}
-    # clusters[originName] = originGenome
-    # for node in cluster:
-    #     clusterGenome = node.get("genome").split("-")
-    #     clusterName = node.get("name")
-    #     clusters[clusterName] = clusterGenome
     
     # while len(clusters) > 0:
     #     for clusterName, clusterGenome in clusters.items():
