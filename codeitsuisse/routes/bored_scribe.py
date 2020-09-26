@@ -55,7 +55,7 @@ def decrypt(message):
             candidates_filtered[cand] = dist_to_message
     
     l = [cand for cand in candidates_filtered]
-    rng = random.randint(0,len(l))
+    rng = random.randint(0,len(l)-1)
     return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
 
