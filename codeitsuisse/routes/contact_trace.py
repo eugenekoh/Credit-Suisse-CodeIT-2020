@@ -64,17 +64,17 @@ def find_path(originName, originGenome, node, clusters, s, response):
         clusterSilent = nextEntriesSilent[i]
         # means end of the trace as ends with origin
         if clusterName == originName:
+            if clusterSilent:
+                sol = "{}* -> {}".format(s, originName)
+                response.append(sol)
+            else:
+                sol = "{} -> {}".format(s, originName)
+                response.append(sol)
+        # not end of the trace so need continue tracing 
+        else:
             if node == originGenome:
                 response.append(s)
                 continue
-            if clusterSilent:
-                s = "{}* -> {}".format(s, originName)
-                response.append(s)
-            else:
-                s = "{} -> {}".format(s, originName)
-                response.append(s)
-        # not end of the trace so need continue tracing 
-        else:
             element = clusters.pop(clusterName)
             if clusterSilent:
                 s = "{}* -> {}".format(s, clusterName)
@@ -124,15 +124,6 @@ def compare_min_diff(infectedGenome, comparators):
         
 
 
-    # minDiff = sys.maxsize 
-    # minGenome = ""
-    # minSilent = True
-    # clusters = {}
-    # clusters[originName] = originGenome
-    # for node in cluster:
-    #     clusterGenome = node.get("genome").split("-")
-    #     clusterName = node.get("name")
-    #     clusters[clusterName] = clusterGenome
     
     # while len(clusters) > 0:
     #     for clusterName, clusterGenome in clusters.items():
