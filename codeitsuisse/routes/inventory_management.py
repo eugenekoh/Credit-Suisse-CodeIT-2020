@@ -68,8 +68,8 @@ def manage_inventory(itemName, items):
                 col -= 1
             curr = dp2[row][col]
         output.append(curr[1])
-        outputs.append((''.join(output[::-1]),dp[-1][-1]))
-    outputs.sort(key = lambda x: (x[1],x[0]))
+        outputs.append((''.join(output[::-1]),item,dp[-1][-1]))
+    outputs.sort(key = lambda x: (x[2],x[1]))
     if len(outputs) > 10:
         outputs = outputs[:10]
     return {"searchItemName":original, "searchResult":[x[0] for x in outputs]}
