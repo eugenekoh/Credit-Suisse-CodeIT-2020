@@ -41,3 +41,9 @@ ortools
 pandas
 numpy
 
+# bucket fill
+xmltodict
+
+# snakes
+networkx
+

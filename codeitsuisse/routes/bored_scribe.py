@@ -6,9 +6,10 @@ try:
 except:
     pass
 from nltk.corpus import wordnet
-from flask import request
+from flask import request, jsonify
 
 from codeitsuisse import app
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +17,13 @@ logger = logging.getLogger(__name__)
 def evaluate_bored_scribe():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
+
     results = []
     for test_case in data:
         message, count = decrypt(test_case['encryptedText'])
         results.append({"id": test_case["id"], "encryptionCount": count, "originalText": message})
     logging.info("result :{}".format(results))
-    return json.dumps(results)
+    return jsonify(results)
 
 def decrypt(message):
     start, end, count = getShift(message)
@@ -40,32 +42,45 @@ def decrypt(message):
     for cand in candidates:
         reachable = {}
         tmp = cand
+        cand_count = 0
+        dist_to_message = None
         while tmp not in reachable:
             reachable[tmp] = True
+            cand_count += 1
             shift = sum([ord(c) for c in tmp[start:end]]) + count
             tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
-        if message in reachable:
-            candidates_filtered[cand] = True
+            if tmp == message:
+                dist_to_message = cand_count
+                break
+        if dist_to_message is not None:
+            candidates_filtered[cand] = dist_to_message
+    
+    l = [cand for cand in candidates_filtered]
+    if len(l) == 0:
+        return message, 0
+    rng = random.randint(0,len(l)-1)
+    return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
-    final_cand = None
-    for cand, _ in candidates_filtered.items():
-        if wordBreak2(cand):
-            final_cand = cand
-    if final_cand == None:
-        return message, 0
-    tmp = final_cand
-    final_count = 0
-    while tmp != message:
-        final_count += 1
-        shift = sum([ord(c) for c in tmp[start:end]]) + count
-        tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
-        if tmp == message:
-            break
-    if final_cand is None:
-        return message, 0
 
-    else:
-        return final_cand, final_count
+    # final_cand = None
+    # for cand, _ in candidates_filtered.items():
+    #     if wordBreak2(cand):
+    #         final_cand = cand
+    # if final_cand == None:
+    #     return message, 0
+    # tmp = final_cand
+    # final_count = 0
+    # while tmp != message:
+    #     final_count += 1
+    #     shift = sum([ord(c) for c in tmp[start:end]]) + count
+    #     tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
+    #     if tmp == message:
+    #         break
+    # if final_cand is None:
+    #     return message, 0
+
+    # else:
+    #     return final_cand, final_count
 
 def getShift(s):
     centers = 2*len(s)-1
