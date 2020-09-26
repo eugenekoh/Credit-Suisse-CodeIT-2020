@@ -15,9 +15,12 @@ def evaluate_fruitbasket():
     weightWatermelon = 1112
     weightBanana = 1333
     data = request.get_json()
+    apple = data.get("maApple")
+    watermelon = data.get("maWatermelon")
+    banana = data.get("maBanana")
     logging.info("data sent for evaluation {}".format(data))
     
-    sumFruits = weightApple * 1 + weightWatermelon * 2 + weightBanana * 3
+    sumFruits = weightApple * apple + weightWatermelon * watermelon + weightBanana * banana
 
 
     return jsonify(sumFruits)
