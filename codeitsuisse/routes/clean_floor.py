@@ -20,58 +20,95 @@ def evaluate_clean_floor():
     return json.dumps(results)
 
 
-# ## ZHIQI ANS
-def clean_floor(arr):
+# # ## ZHIQI ANS GREEDY
+def clean_floor(nums):
     moves = 0
     left = 0
     current = 0
-    right = len(arr) - 1
+    right = len(nums) - 1
     # find the last part of the array that needs to be mopped
     while right >= 0:
-        if arr[right] != 0:
+        if nums[right] != 0:
             break
         right-=1
-    
-    dirt = 0
-    for num in arr:
-        dirt += num
-    increment = True
-    while dirt > 0 and left != right:            
-        if current == right:
-            increment = False
-            if arr[right] == 0 and right != 0:
-                right -= 1
-        if current == left:
-            increment = True
-            if arr[left] == 0 and left != len(arr)-1:
-                left += 1
-        if increment:
-            nextPos = current + 1
-            if arr[nextPos] == 0:
-                arr[nextPos] = 1
-                dirt += 1
-            else:
-                arr[nextPos] -= 1
-                dirt -= 1
-            current += 1
+    while left < right:
+        value = nums[left]
+        i = value
+        if value % 2 == 0:
+            moves += (value*2)
         else:
-            nextPos = current - 1
-            if arr[nextPos] == 0:
-                arr[nextPos] = 1
-                dirt += 1
+            moves += (value*2)+1
+            i += 1
+        while i != 0:
+            if nums[left+1] != 0:
+                nums[left+1]-=1
             else:
-                arr[nextPos] -= 1
-                dirt -= 1
-            current -= 1
-        moves += 1
-        
-    value = arr[left]
-    if value % 2 == 0:
-        moves += (value*2)
-    else:
-        moves += (value*2)+1
-
+                nums[left+1]+=1
+            i -= 1
+        left += 1
+    if nums[right] != 0:
+        value = nums[left]
+        if value % 2 == 0:
+            moves += (value*2)
+        else:
+            moves += (value*2)+1
     return moves
+            
+                
+
+
+# # ## ZHIQI ANS SLIDING WINDOW
+# def clean_floor(arr):
+#     moves = 0
+#     left = 0
+#     current = 0
+#     right = len(arr) - 1
+#     # find the last part of the array that needs to be mopped
+#     while right >= 0:
+#         if arr[right] != 0:
+#             break
+#         right-=1
+    
+#     dirt = 0
+#     for num in arr:
+#         dirt += num
+#     increment = True
+#     while dirt > 0 and left != right:            
+#         if current == right:
+#             increment = False
+#             if arr[right] == 0 and right != 0:
+#                 right -= 1
+#         if current == left:
+#             increment = True
+#             if arr[left] == 0 and left != len(arr)-1:
+#                 left += 1
+#         if increment:
+#             nextPos = current + 1
+#             if arr[nextPos] == 0:
+#                 arr[nextPos] = 1
+#                 dirt += 1
+#             else:
+#                 arr[nextPos] -= 1
+#                 dirt -= 1
+#             current += 1
+#         else:
+#             nextPos = current - 1
+#             if arr[nextPos] == 0:
+#                 arr[nextPos] = 1
+#                 dirt += 1
+#             else:
+#                 arr[nextPos] -= 1
+#                 dirt -= 1
+#             current -= 1
+#         moves += 1
+        
+#     value = arr[left]
+#     if value % 2 == 0:
+#         moves += (value*2)
+#     else:
+#         moves += (value*2)+1
+
+#     return moves
 
 
 

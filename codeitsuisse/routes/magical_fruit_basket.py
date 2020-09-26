@@ -14,7 +14,7 @@ def evaluate_fruitbasket():
     weightApple = 900
     weightWatermelon = 1112
     weightBanana = 1333
-    data = ast.literal_eval(request.get_data())
+    data = request.get_data(as_text=True)
     jsonData = json.loads(data)
     apple = jsonData["maApple"]
     watermelon = jsonData["maWatermelon"]
