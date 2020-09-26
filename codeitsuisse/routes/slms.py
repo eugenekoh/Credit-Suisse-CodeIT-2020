@@ -40,7 +40,7 @@ class Roll:
 @app.route('/slsm', methods=['POST'])
 def evaluate_slsm():
     data = request.get_json()
-
+    logger.info(data)
     n = data["boardSize"]
     players = data["players"]
     jumps = data["jumps"]
