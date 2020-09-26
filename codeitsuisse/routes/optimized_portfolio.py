@@ -15,13 +15,15 @@ logger = logging.getLogger(__name__)
 @app.route('/optimizedportfolio', methods=['POST'])
 def evaluate_optimized_portfolio():
     data = request.get_json()["inputs"]
-    logger.info(request.get_json())
+    # logger.info(request.get_json())
     outputs = []
+
     for d in data:
         portfolio_value = d["Portfolio"]["Value"]
         spot_volatility = d["Portfolio"]["SpotPrcVol"]
         df = pd.DataFrame(d["IndexFutures"])
         outputs.append(optimized_portfolio(portfolio_value, spot_volatility, df))
+
     result = {
         "outputs": outputs
     }
@@ -30,16 +32,20 @@ def evaluate_optimized_portfolio():
 
 
 def hedge_ratio(corelation, spot_vol, futures_vol):
-    return corelation * spot_vol / futures_vol
+    return np.round(corelation * spot_vol / futures_vol, 3)
 
 
 def num_futures_contract(hedge_ratio, portfolio_val, futures_price, notional_val):
-    return np.ceil(hedge_ratio * portfolio_val / (futures_price * notional_val))
+    return np.round(hedge_ratio * portfolio_val / (futures_price * notional_val))
 
 
 def optimized_portfolio(portfolio_value, spot_volatility, df):
     df["OptimalHedgeRatio"] = hedge_ratio(df["CoRelationCoefficient"].values, spot_volatility,
                                           df["FuturePrcVol"].values)
+    df["NumFuturesContract"] = num_futures_contract(df["OptimalHedgeRatio"].values, portfolio_value,
+                                                    df["IndexFuturePrice"].values,
+                                                    df["Notional"].values)
+
     min_hedges = df[df["OptimalHedgeRatio"] == df["OptimalHedgeRatio"].min()].index
     min_future_vols = df[df["FuturePrcVol"] == df["FuturePrcVol"].min()].index
 
@@ -49,15 +55,12 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
         num = num_futures_contract(row["OptimalHedgeRatio"], portfolio_value, row["IndexFuturePrice"], row["Notional"])
         result = {
             "HedgePositionName": row["Name"],
-            "OptimalHedgeRatio": round(row["OptimalHedgeRatio"], 3),
+            "OptimalHedgeRatio": row["OptimalHedgeRatio"],
             "NumFuturesContract": int(num)
         }
         return result
 
     df = df.iloc[total]
-    df["NumFuturesContract"] = num_futures_contract(df["OptimalHedgeRatio"].values, portfolio_value,
-                                                    df["IndexFuturePrice"].values,
-                                                    df["Notional"].values)
 
     min_num_futures = df[df["NumFuturesContract"] == df["NumFuturesContract"].min()]
     row = min_num_futures.iloc[0]
@@ -66,7 +69,7 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
 
     hedge_result = {
         "HedgePositionName": row["Name"],
-        "OptimalHedgeRatio": round(row["OptimalHedgeRatio"], 3),
+        "OptimalHedgeRatio": row["OptimalHedgeRatio"],
         "NumFuturesContract": int(row["NumFuturesContract"])
     }
 
