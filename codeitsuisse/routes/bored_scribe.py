@@ -54,7 +54,7 @@ def decrypt(message):
                 break
         if dist_to_message is not None:
             candidates_filtered[cand] = dist_to_message
-    
+    logging.info(f"{candidates_filtered}")
     # l = [cand for cand in candidates_filtered]
     # if len(l) == 0:
     #     return message, 0
