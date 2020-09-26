@@ -16,4 +16,5 @@ import codeitsuisse.routes.olympiad_of_babylon
 import codeitsuisse.routes.optimized_portfolio
 import codeitsuisse.routes.bored_scribe
 import codeitsuisse.routes.magical_fruit_basket
+import codeitsuisse.routes.slms
 import codeitsuisse.routes.bucket_fill
