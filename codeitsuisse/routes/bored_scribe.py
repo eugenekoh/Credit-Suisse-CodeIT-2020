@@ -1,11 +1,12 @@
 import logging
 import json
-import nltk
-try:
-    nltk.download("wordnet")
-except:
-    pass
-from nltk.corpus import wordnet
+# import nltk
+# try:
+#     nltk.download("wordnet")
+# except:
+#     pass
+# from nltk.corpus import wordnet
+import enchant
 from flask import request
 
 from codeitsuisse import app
@@ -55,17 +56,18 @@ def decrypt(message):
         if dist_to_message is not None:
             candidates_filtered[cand] = dist_to_message
     
-    l = [cand for cand in candidates_filtered]
-    if len(l) == 0:
-        return message, 0
-    rng = random.randint(0,len(l)-1)
-    return l[rng], candidates_filtered[l[rng]]
+    # l = [cand for cand in candidates_filtered]
+    # if len(l) == 0:
+    #     return message, 0
+    # rng = random.randint(0,len(l)-1)
+    # return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
+    d = enchant.Dict("en_US")
+    for cand, cand_count in candidates_filtered.items():
+        if wordBreak(cand, d):
+            return cand, cand_count
 
-    # final_cand = None
-    # for cand, _ in candidates_filtered.items():
-    #     if wordBreak2(cand):
-    #         final_cand = cand
+    return message, 0 
     # if final_cand == None:
     #     return message, 0
     # tmp = final_cand
@@ -138,22 +140,22 @@ def wordBreak(s, wordDict):
                         break
     return dp[0][-1]
 
-def wordBreak2(s):
-    dp = [[False]*len(s) for i in range(len(s))]
-    for i in range(len(s)-1,-1,-1):
-        for j in range(len(s)):
-            if i == j:
-                dp[i][j] = True if (s[i] == 'a' or s[i] == 'i') else False
-            elif i > j:
-                continue
-            elif len(wordnet.synsets(s[i:j+1])) > 0:
-                dp[i][j] = True
-            else:
-                for k in range(i,j+1):
-                    if dp[i][k] and dp[k+1][j]:
-                        dp[i][j] = True
-                        break
-    return dp[0][-1]
+# def wordBreak2(s):
+#     dp = [[False]*len(s) for i in range(len(s))]
+#     for i in range(len(s)-1,-1,-1):
+#         for j in range(len(s)):
+#             if i == j:
+#                 dp[i][j] = True if (s[i] == 'a' or s[i] == 'i') else False
+#             elif i > j:
+#                 continue
+#             elif len(wordnet.synsets(s[i:j+1])) > 0:
+#                 dp[i][j] = True
+#             else:
+#                 for k in range(i,j+1):
+#                     if dp[i][k] and dp[k+1][j]:
+#                         dp[i][j] = True
+#                         break
+#     return dp[0][-1]
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))

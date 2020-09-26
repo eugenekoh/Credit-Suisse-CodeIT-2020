@@ -33,6 +33,7 @@ sympy
 
 # english dict
 nltk
+pyenchant==3.0.0a1
 
 # olympiad of babylon
 ortools
