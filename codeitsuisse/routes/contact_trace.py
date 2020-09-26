@@ -49,7 +49,63 @@ def evaluate_contact_tracing():
 
     #     # iterate the distance between clusters to append to minimum clusters
     #     for name, detailArr in distanceBtwClusters.items():
-    #         if 
+    #         if detailArr[0] == minDiff:
+    #             minimunClusters.append([name,detailArr[1]])
+    #     graph[clusterName] = minimunClusters
+
+    
+    # startGraph = []
+    # distanceBtwClusters = {}
+    # minDiff = sys.maxsize
+    
+    # # put to the starting point from first infected node
+    # for nextName, nextGenome in clusters.items():
+    #     diffNum, silent = compare_diff(nextGenome, infectedGenome)
+    #     distanceBtwClusters = [diffNum, silent]
+    #     if diffNum <= minDiff:
+    #         startGraph.append([nextName, details[1]])
+
+    # graph[infectedName] = startGraph
+    # possibleTraces = []
+    # nextClusters = graph
+
+    # for cluster in graph:
+    #     possiblePaths.append([[graph]], cluster])
+
+    # iterateTraces = possibleTraces.copy()
+    # sol = []
+
+    # while len(iterateTraces) > 0:
+    #     for i in range(len(possibleTraces)):
+    #         trace = possibleTraces[i]
+    #         nextClusters = graph[trace[-1][0]]
+    #         if len(trace[-1]) == 0:
+    #             sol.append(trace)
+    #             iterateTraces[i] = trace
+    #         elif len(trace[-1]) == 1:
+    #             trace.append(trace[-1][0])
+    #             iterateTraces[i] = trace
+    #         else:
+    #             trace.append(trace[-1][0])
+    #             for n in trace[-1][1:]:
+    #                 newTraces = trace.copy()
+    #                 newTraces.append(n)
+    #                 iterateTraces.append(newTraces)
+    #     possibleTraces = iterateTraces.copy()
+
+    #     for s in sol:
+    #         res = ""
+    #         for n in s:
+    #             if len(n) == 1:
+    #                 res += n[0]
+    #             else:
+    #                 if n[1] == True:
+    #                     res = "{}*".format(res)
+    #                 res = "{} -> {}".format(res, n[0])
+    #         response.add(res)
+
+
+
                 
         
     firstEntriesGenome, firstEntriesSilent, nextEntriesDiff = compare_min_diff(infectedName, infectedGenome, clusters)
@@ -82,6 +138,39 @@ def evaluate_contact_tracing():
     
     logging.info("My result :{}".format(response))
     return jsonify(list(response))
+
+
+# def compare_diff(x, y):
+#     diff = 0
+#     silent = True
+#     for i in range(len(x)):
+#         if x[i] != y[i]:
+#             for c in range(len(clusterGenome[i])):
+#                 if clusterGenome[i][c] != infectedGenome[i][c]:
+#                     if c == 0:
+#                         silentCount += 1
+#                     if c != 0:
+#                         silent = False
+#                     diff += 1
+#         if diff < minDiff:
+#             minDiff = diff
+#             minGenome = [clusterName]
+#             if silentCount <= 1:
+#                 silent = False
+#             if not silent:
+#                 minSilent = [False]
+#             else:
+#                 minSilent = [True]
+#             diffArr.append(diff)
+#         elif diff == minDiff:
+#             if silentCount <= 1:
+#                 silent = False
+#             minGenome.append(clusterName)
+#             if not silent:
+#                 minSilent.append(False)
+#             else:
+#                 minSilent.append(True)
+#             diffArr.append(diff)
 
 def find_path(name, originName, originGenome, node, clusters, s, response):
     nextEntriesGenome, nextEntriesSilent, nextEntriesDiff = compare_min_diff(name, node, clusters)
@@ -128,7 +217,7 @@ def compare_min_diff(infectedName, infectedGenome, comparators):
         silent = True
         silentCount = 0
         for i in range(len(clusterGenome)):
-            if clusterGenome[i] != infectedGenome:
+            if clusterGenome[i] != infectedGenome[i]:
                 for c in range(len(clusterGenome[i])):
                     if clusterGenome[i][c] != infectedGenome[i][c]:
                         if c == 0:
