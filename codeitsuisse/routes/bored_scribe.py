@@ -181,7 +181,7 @@ def wordBreak2(s):
                 dp[i][j] = False
             elif i > j:
                 continue
-            elif s[i:j+1] in english_words_set and j+1-i > 3:
+            elif s[i:j+1] in english_words_set and j+1-i > 4:
                 dp[i][j] = True
                 count += 1
             else:
