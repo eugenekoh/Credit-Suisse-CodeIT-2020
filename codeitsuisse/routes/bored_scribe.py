@@ -55,19 +55,18 @@ def decrypt(message):
         if dist_to_message is not None:
             candidates_filtered[cand] = dist_to_message
     
-    l = [cand for cand in candidates_filtered]
-    if len(l) == 0:
-        return message, 0
-    rng = random.randint(0,len(l)-1)
-    return l[rng], candidates_filtered[l[rng]]
+    # l = [cand for cand in candidates_filtered]
+    # if len(l) == 0:
+    #     return message, 0
+    # rng = random.randint(0,len(l)-1)
+    # return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
 
     # final_cand = None
-    # for cand, _ in candidates_filtered.items():
-    #     if wordBreak2(cand):
-    #         final_cand = cand
-    # if final_cand == None:
-    #     return message, 0
+    for cand, count in candidates_filtered.items():
+        if wordBreak2(cand[:20]):
+            return cand, cand_count
+    return message, 0
     # tmp = final_cand
     # final_count = 0
     # while tmp != message:
@@ -153,7 +152,12 @@ def wordBreak2(s):
                     if dp[i][k] and dp[k+1][j]:
                         dp[i][j] = True
                         break
-    return dp[0][-1]
+    count = 0
+    for l in dp:
+        for el in l:
+            if el:
+                count += 1
+    return count > int(0.2*len(s))
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
