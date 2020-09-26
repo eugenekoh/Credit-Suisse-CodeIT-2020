@@ -99,6 +99,8 @@ def decrypt(message):
             for word in cand_split:
                 if len(word) > 3:
                     num_eng += 1
+            if num_eng > len(cand_split) // 2:
+                return ' '.join(cand_split), count
             if num_eng > best_count:
                 best_count = num_eng
                 best_cand = ' '.join(cand_split)
