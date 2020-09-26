@@ -81,7 +81,7 @@ def find_path(originName, originGenome, node, clusters, s, response):
             else:
                 s = "{} -> {}".format(s, clusterName)
             # find all paths starting with clusterName
-            find_path(clusterName, originName, clusters, s)
+            find_path(originName, originGenome, element, clusters, s, response)
             # add back cluster name for next iteration
             clusters[clusterName] = element
 
