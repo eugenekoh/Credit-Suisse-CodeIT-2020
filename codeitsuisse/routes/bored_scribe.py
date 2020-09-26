@@ -67,7 +67,7 @@ def decrypt(message):
     best_count = 0
     best_cand = None
     for cand, count in candidates_filtered.items():
-        curr_count = wordBreak2(cand[:20])
+        curr_count = wordBreak2(cand[:40])
         if curr_count > best_count:
             best_count = curr_count
             best_cand = cand
