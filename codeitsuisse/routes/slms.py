@@ -123,7 +123,7 @@ class Solution:
     def get_lose_rolls(self, win_length):
         path = []
         i = 0
-        while len(path) < win_length * 2:
+        while len(path) < win_length * 4:
             path.append(i + 1)
             cur = self.board[i]
             if cur.type == JumpType.End:
