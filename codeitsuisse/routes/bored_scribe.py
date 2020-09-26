@@ -64,41 +64,41 @@ def decrypt(message):
     # return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
 
-    # final_cand = None
-    best_count = 0
-    best_cand = None
-    for cand, count in candidates_filtered.items():
-        curr_count = wordBreak2(cand[:40])
-        if curr_count > best_count:
-            best_count = curr_count
-            best_cand = cand
-    if best_cand is not None:
-        try:
-            toReturn = ' '.join(wordninja.split(best_cand))
-            return toReturn, candidates_filtered[best_cand]
-        except:
-            return best_cand, candidates_filtered[best_cand]
-    try:
-        toReturn = ' '.join(wordninja.split(best_cand))
-        return toReturn, 0
-    except:
-        return message, 0
+    # get decrypted message
+    # best_count = 0
+    # best_cand = None
+    # for cand, count in candidates_filtered.items():
+    #     curr_count = wordBreak2(cand[:40])
+    #     if curr_count > best_count:
+    #         best_count = curr_count
+    #         best_cand = cand
+            
+    # # get word breaks
+    # if best_cand is not None:
+    #     try:
+    #         toReturn = ' '.join(wordninja.split(best_cand))
+    #         return toReturn, candidates_filtered[best_cand]
+    #     except:
+    #         return best_cand, candidates_filtered[best_cand]
+    # try:
+    #     toReturn = ' '.join(wordninja.split(message))
+    #     return toReturn, 0
+    # except:
+    #     return message, 0
 
     
 
-    # tmp = final_cand
-    # final_count = 0
-    # while tmp != message:
-    #     final_count += 1
-    #     shift = sum([ord(c) for c in tmp[start:end]]) + count
-    #     tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
-    #     if tmp == message:
-    #         break
-    # if final_cand is None:
-    #     return message, 0
-
-    # else:
-    #     return final_cand, final_count
+    for cand, cand_count in candidates_filtered.items():
+        try:
+            toReturn = ' '.join(wordninja.split(cand))
+            return toReturn, cand_count
+        except:
+            pass
+    try:
+        toReturn = ' '.join(wordninja.split(message))
+        return toReturn, 0
+    except:
+        return message, 0
 
 def getShift(s):
     centers = 2*len(s)-1
