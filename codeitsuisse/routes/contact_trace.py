@@ -234,21 +234,38 @@ def evaluate_contact_tracing():
 
 
 def compare_diff(x, y):
+    diff_genome = 0 
+    first_char_diff_genome = 0 
+    non_silent = False
+
+    for index in range(len(x)):
+        if x[index] != y[index]:
+
+            x_instr = list(x[index])
+            x_instr = list(y[index])
+
+            #compare num diff in instr.
+            diff_instr = compare_instr(x_instr, y_instr)
+            diff_genome += diff_instr[0]
+            first_char_diff_genome += diff_instr[1]
+    if first_char_diff_genome > 1:
+        non_silent = True
+    
+    return diff_genome, non_silent
+
+def compare_instr(instr1, instr2):
+
     diff = 0
-    silent = True
-    silentCount = 0
-    for i in range(len(x)):
-        if x[i] != y[i]:
-            for c in range(len(clusterGenome[i])):
-                if clusterGenome[i][c] != infectedGenome[i][c]:
-                    if c == 0:
-                        silentCount += 1
-                    if c != 0:
-                        silent = False
-                    diff += 1
-        if silentCount <= 1:
-            silent = False
-    return diff, silent
+    first_char_diff = 0
+
+    for char_index in range(len(instr1)):
+        
+        if instr1[char_index] != instr2[char_index]:
+            if char_index == 0:
+                first_char_diff += 1
+            diff += 1
+    
+    return [diff, first_char_diff]
 
 # def find_trace(name, originName, originGenome, node, clusters, s, response):
 #     nextEntriesGenome, nextEntriesSilent, nextEntriesDiff = compare_minDiff(name, node, clusters)
