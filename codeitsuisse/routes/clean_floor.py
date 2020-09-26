@@ -64,33 +64,7 @@ def clean_floor(arr):
                 dirt -= 1
             current -= 1
         moves += 1
-    currPos = 0
-    direction = 0
-    while firstNonZero != lastNonZero:
-        if direction == 0:
-            moves += (lastNonZero-currPos)
-            for i in range(currPos+1,lastNonZero+1):
-                if arr[i] > 0:
-                    arr[i] -= 1
-                elif arr[i] == 0:
-                    arr[i] += 1
-            currPos = lastNonZero
-            while arr[firstNonZero] == 0 and firstNonZero < lastNonZero:
-                firstNonZero += 1
-            direction = 1
-        elif direction == 1:
-            moves += (currPos - firstNonZero)
-            for i in range(currPos-1,firstNonZero-1,-1):
-                if arr[i] > 0:
-                    arr[i] -= 1
-                elif arr[i] == 0:
-                    arr[i] += 1
-            currPos = firstNonZero
-            while arr[lastNonZero] == 0 and firstNonZero < lastNonZero:
-                lastNonZero -= 1
-            direction = 0
         
-
     value = arr[left]
     if value % 2 == 0:
         moves += (value*2)
