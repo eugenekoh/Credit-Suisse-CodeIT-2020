@@ -13,7 +13,7 @@ def evaluate_cluster():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
 
-    results = {"answers":{cluster(data)}}
+    results = {"answers":cluster(data)}
     logging.info("result :{}".format(results))
 
     return json.dumps(results)
