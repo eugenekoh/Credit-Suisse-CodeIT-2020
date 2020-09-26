@@ -46,11 +46,10 @@ def optimized_portfolio(portfolio_value, spot_volatility, df):
     df["NumFuturesContract"] = num_futures_contract(df["OptimalHedgeRatio"].values, portfolio_value,
                                                     df["IndexFuturePrice"].values,
                                                     df["Notional"].values)
-    max_vol = df['FuturePrcVol'].max()
-    min_vol = df['FuturePrcVol'].min()
-    df['FuturePrcVolScaled'] = df['FuturePrcVol'].apply(lambda x: min_max_scaler(x, max_vol, min_vol))
-    df['HRVolCombined'] = df['OptimalHedgeRatio'] + df['FuturePrcVolScaled']
-
+    # max_vol = df['FuturePrcVol'].max()
+    # min_vol = df['FuturePrcVol'].min()
+    # df['FuturePrcVolScaled'] = df['FuturePrcVol'].apply(lambda x: min_max_scaler(x, max_vol, min_vol))
+    df['HRVolCombined'] = df['OptimalHedgeRatio'] + df['FuturePrcVol']
     min_hr_vols = df[df["HRVolCombined"] == df["HRVolCombined"].min()].index
     if len(min_hr_vols) == 1:
         row = df.iloc[min_hr_vols[0]]
