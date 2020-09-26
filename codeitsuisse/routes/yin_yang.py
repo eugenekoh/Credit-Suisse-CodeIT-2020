@@ -1,5 +1,5 @@
 import logging
-import math
+from decimal import Decimal
 
 from flask import request, jsonify
 
@@ -26,7 +26,7 @@ def evaluate_yy():
     elements = data["elements"]
 
     s = Solution()
-    result = s.yy(elements, k)
+    result = float(s.yy(elements, k))
 
     return jsonify(result)
 
@@ -36,38 +36,33 @@ class Solution:
         self.memo = {}
 
     def yy(self, elem, k):
-        branches = math.ceil(len(elem) / 2)
-
         # check memo
         if elem in self.memo:
             return self.memo[elem]
 
         # base case
         if k == 0:
-            return 0
+            return Decimal(0)
 
         # recursive
-        expected_yang = 0
-        for i in range(branches):
+        expected_yang = Decimal(0)
+        for i in range(len(elem)):
 
             # choose most rational decision
             left_elem = elem[:i] + elem[i + 1:]
             left_yang = self.yy(left_elem, k - 1)
             if elem[i] == "Y":
-                left_yang += 1
+                left_yang += Decimal(1)
 
             right = len(elem) - 1 - i
             right_elem = elem[:right] + elem[right + 1:]
             right_yang = self.yy(right_elem, k - 1)
             if elem[right] == "Y":
-                right_yang += 1
+                right_yang += Decimal(1)
 
             # add expectation from this branch
             max_yang = max(left_yang, right_yang)
-            if i == branches - 1:
-                expected_yang += max_yang * 1 / branches
-            else:
-                expected_yang += max_yang * 2 / branches
+            expected_yang += max_yang * Decimal(1) / Decimal(len(elem))
 
         # keep solution to current search node
         if elem not in self.memo:
