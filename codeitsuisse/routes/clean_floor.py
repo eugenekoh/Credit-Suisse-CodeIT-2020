@@ -19,82 +19,6 @@ def evaluate_clean_floor():
     logging.info("result :{}".format(results))
 
     return json.dumps(results)
-
-
-
-# ### ZHIQI Backtrack
-# def clean_floor(nums):
-#     moves = sys.maxsize
-#     dirt = sum(nums)
-#     right = len(nums) - 1
-#     left = 0
-#     # find the last part of the array that needs to be mopped
-#     while right >= 0:
-#         if nums[right] != 0:
-#             break
-#         right-=1
-#     def backtrack(dirt, steps, i, nums):
-#         if dirt == 0:
-#             moves = min(moves, steps)
-#             return
-#         if 
-#         if i == 0:
-#             minus = True
-#             # only 1 choice to move right
-#             if nums[i+1] != 0:
-#                 nums[i+1]-=1
-#                 dirt -= 1
-#                 minus = False
-#             else:
-#                 nums[i+1]+=1
-#                 dirt += 1
-#             backtrack(dirt, steps+1, i+1, nums)
-#         elif i == right:
-#             minus = True
-#             # only 1 choice to move left
-#             if nums[i-1] != 0:
-#                 nums[i-1]-=1
-#                 dirt -= 1
-#                 minus = False
-#             else:
-#                 nums[i-1]+=1
-#                 dirt += 1
-#             backtrack(dirt, steps+1, i-1, nums)
-#         else:
-#             minus = True
-#             # 2 choice to move left or move right
-#             if nums[i+1] != 0:
-#                 nums[i+1]-=1
-#                 dirt -= 1
-#                 minus = False
-#             else:
-#                 nums[i+1]+=1
-#                 dirt += 1
-#             backtrack(dirt, steps+1, i+1, nums)
-#             if minus:
-#                 nums[i+1] -= 1
-#                 dirt -= 1
-#             else:
-#                 nums[i+1] += 1
-#                 dirt += 1
-#             minus = True
-#             if nums[i-1] != 0:
-#                 nums[i-1]-=1
-#                 dirt -= 1
-#                 minus = False
-#             else:
-#                 nums[i-1]+=1
-#                 dirt += 1
-#             backtrack(dirt, steps+1, i-1, nums)
-#             if minus:
-#                 nums[i+1] -= 1
-#                 dirt -= 1
-#             else:
-#                 nums[i+1] += 1
-#                 dirt += 1
-#     backtrack(dirt, 0, 0, nums)
-#     return moves
-
             
         
 
@@ -131,28 +55,6 @@ def clean_floor(nums):
         
     return moves
 
-    #     i = value
-    #     if value == 0:
-    #         i = 1
-    #     if value % 2 == 0:
-    #         moves += (value*2)
-    #     else:
-    #         moves += (value*2)+1
-    #         i += 1
-    #     while i != 0:
-    #         if nums[left+1] != 0:
-    #             nums[left+1]-=1
-    #         else:
-    #             nums[left+1]+=1
-    #         i -= 1
-    #     left += 1
-    # if nums[right] != 0:
-    #     value = nums[left]
-    #     if value % 2 == 0:
-    #         moves += (value*2)
-    #     else:
-    #         moves += (value*2)+1
-    # return moves
             
 def compareFloors(prevlevel, nextlevel, nums):
     preValue = nums[prevlevel]
