@@ -7,7 +7,7 @@ from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
 
-@app.route('/clean-floor', methods=['POST'])
+@app.route('/clean_floor', methods=['POST'])
 def evaluate_clean_floor():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
