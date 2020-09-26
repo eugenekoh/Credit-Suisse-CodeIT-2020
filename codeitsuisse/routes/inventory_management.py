@@ -10,12 +10,15 @@ logger = logging.getLogger(__name__)
 @app.route('/inventory-management', methods=['POST'])
 def evaluate_inventory_management():
     data = request.get_json()
-    result = manage_inventory(data['searchItemName'], data['items'])
-
     logging.info("data sent for evaluation {}".format(data))
-    logging.info("result :{}".format(result))
 
-    return json.dumps(result)
+    results = []
+    for test_case in data:
+        results.append(manage_inventory(test_case['searchItemName'], test_case['items']))
+
+    logging.info("result :{}".format(results))
+
+    return json.dumps(results)
 
 def manage_inventory(itemName, items):
     original = itemName
