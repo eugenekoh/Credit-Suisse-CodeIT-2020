@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 def evaluate_cluster():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
-
-    results = {"answers":{cluster(data)}}
+    count = cluster(data)
+    results = {"answer": count}
     logging.info("result :{}".format(results))
 
     return json.dumps(results)
@@ -34,7 +34,7 @@ def cluster(grid):
                     for neighbor in getNeighbors(curr[0],curr[1],m,n):
                         if not visited[neighbor[0]][neighbor[1]]:
                             if grid[neighbor[0]][neighbor[1]] != '*':
-                                print(neighbor)
+                                # print(neighbor)
                                 visited[neighbor[0]][neighbor[1]] = True
                                 queue.append((neighbor[0],neighbor[1]))
     return count
