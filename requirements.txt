@@ -33,6 +33,6 @@ pytest
 sympy
 
 # english dict
-pyenchant==3.0.0a1
+nltk
 # olympiad of babylon
 ortools

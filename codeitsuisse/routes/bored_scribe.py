@@ -1,7 +1,9 @@
 import enchant
 import logging
 import json
-
+import nltk
+nltk.download("wordnet")
+from nltk.corpus import wordnet
 from flask import request
 
 from codeitsuisse import app
@@ -33,20 +35,31 @@ def decrypt(message):
     for cand in candidates:
         reachable = {}
         tmp = cand
-        count = 0
         while tmp not in reachable:
-            count += 1
             reachable[tmp] = True
             shift = sum([ord(c) for c in tmp[start:end]]) + count
-            tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in output])
+            tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
         if message in reachable:
-            candidates_filtered[cand] = count
-    # print(candidates_filtered)
+            candidates_filtered[cand] = True
+    # print(len(candidates_filtered),candidates_filtered)
     wordDict = enchant.Dict("en_US")
-    for cand, count in candidates_filtered.items():
-        if wordBreak(cand, wordDict):
-            return cand, count
-    return message, 0
+    final_cand = None
+    for cand, _ in candidates_filtered.items():
+        if wordBreak2(cand):
+            final_cand = cand
+    tmp = final_cand
+    final_count = 0
+    while tmp != message:
+        final_count += 1
+        shift = sum([ord(c) for c in tmp[start:end]]) + count
+        tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
+        if tmp == message:
+            break
+    if final_cand is None:
+        return message, 0
+
+    else:
+        return final_cand, final_count
 
 def getShift(s):
     centers = 2*len(s)-1
@@ -104,7 +117,22 @@ def wordBreak(s, wordDict):
                         break
     return dp[0][-1]
 
+def wordBreak2(s):
+    dp = [[False]*len(s) for i in range(len(s))]
+    for i in range(len(s)-1,-1,-1):
+        for j in range(len(s)):
+            if i == j:
+                dp[i][j] = True if (s[i] == 'a' or s[i] == 'i') else False
+            elif i > j:
+                continue
+            elif len(wordnet.synsets(s[i:j+1])) > 0:
+                dp[i][j] = True
+            else:
+                for k in range(i,j+1):
+                    if dp[i][k] and dp[k+1][j]:
+                        dp[i][j] = True
+                        break
+    return dp[0][-1]
 
 # d = enchant.Dict("en_US")
-# print(wordBreak("racecar",d))
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
