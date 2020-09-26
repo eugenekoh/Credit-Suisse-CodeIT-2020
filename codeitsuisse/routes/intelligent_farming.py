@@ -37,13 +37,8 @@ def intelligent_farming(gene_seq):
 
     # greedy solution
 
-    # greedily get all "CC" pairs which gives +25 points.
-    num_c = count.get("C", 0)
-    quotient, remainder = divmod(num_c, 2)
-    count["C"] = remainder
-    result += ["CC"] * quotient
-
     # greedily get all "ACGT" pairs which gives +10 points.
+    # prefer ACGT over CC
     four_pair = "ACGT"
     num_four_pair = 0
     while all(count.get(ch, 0) > 0 for ch in four_pair):
@@ -51,6 +46,19 @@ def intelligent_farming(gene_seq):
             count[ch] -= 1
         num_four_pair += 1
     result += ["ACGT"] * num_four_pair
+
+    # if there is lone ACGT and one C extra, better to form CC,
+    if len(result) % 2 != 0 and count.get("C", 0) % 2 != 0:
+        result.pop()
+        for ch in four_pair:
+            count[ch] += 1
+
+    # greedily get all "CC" pairs which gives +25 points.
+    num_c = count.get("C", 0)
+    quotient, remainder = divmod(num_c, 2)
+    count["C"] = remainder
+    result += ["CC"] * quotient
+
 
     for key, value in count.items():
         if value > 0 and key != "A":
