@@ -29,7 +29,30 @@ def evaluate_contact_tracing():
         clusterName = node.get("name")
         clusters[clusterName] = clusterGenome
     # find the first point of entry first
-    firstEntriesGenome, firstEntriesSilent = compare_min_diff(infectedGenome, clusters)
+    # graph = {}
+    # graph[originName] = []
+    # # build graph of minimum clusters
+    # for clusterName, clusterGenome in clusters.items():
+    #     # do not process origin
+    #     if name == originName:
+    #         continue
+    #     minimunClusters = []
+    #     minDiff = sys.maxsize
+    #     distanceBtwClusters = {}
+    #     for nextName, nextGenome in clusters.items():
+    #         # skip own cluster
+    #         if clusterName != nextName:
+    #             thisGenome, thisSilent = compare_min_diff(clusterGenome, nextGenome)
+    #             distanceBtwClusters[nextName] = [thisGenome, thisSilent]
+    #             if thisGenome <= minDiff and thisGenome != 0:
+    #                 minDiff = thisGenome
+
+    #     # iterate the distance between clusters to append to minimum clusters
+    #     for name, detailArr in distanceBtwClusters.items():
+    #         if 
+                
+        
+    firstEntriesGenome, firstEntriesSilent = compare_min_diff(infectedName, infectedGenome, clusters)
     for i in range(len(firstEntriesGenome)):
         clusterName = firstEntriesGenome[i]
         clusterSilent = firstEntriesSilent[i]
@@ -43,7 +66,7 @@ def evaluate_contact_tracing():
                 response.add(s)
         # not end of the trace so need continue tracing 
         else:
-            element = clusters.pop(clusterName)
+            element = clusters.get(clusterName)
             s = ""
             if clusterSilent:
                 s = "{}* -> {}".format(infectedName, clusterName)
@@ -53,15 +76,15 @@ def evaluate_contact_tracing():
                 response.add(s)
                 continue
             # find all paths starting with clusterName
-            find_path(originName, originGenome, element, clusters, s, response)
+            find_path(clusterName, originName, originGenome, element, clusters, s, response)
             # add back cluster name for next iteration
-            clusters[clusterName] = element
+            # clusters[clusterName] = element
     
     logging.info("My result :{}".format(response))
     return jsonify(list(response))
 
-def find_path(originName, originGenome, node, clusters, s, response):
-    nextEntriesGenome, nextEntriesSilent = compare_min_diff(node, clusters)
+def find_path(name, originName, originGenome, node, clusters, s, response):
+    nextEntriesGenome, nextEntriesSilent = compare_min_diff(name, node, clusters)
     for i in range(len(nextEntriesGenome)):
         clusterName = nextEntriesGenome[i]
         clusterSilent = nextEntriesSilent[i]
@@ -78,7 +101,7 @@ def find_path(originName, originGenome, node, clusters, s, response):
             if node == originGenome:
                 response.addd(s)
                 continue
-            element = clusters.pop(clusterName)
+            # element = clusters.pop(clusterName)
             if clusterSilent:
                 s = "{}* -> {}".format(s, clusterName)
             else:
@@ -86,16 +109,18 @@ def find_path(originName, originGenome, node, clusters, s, response):
             # find all paths starting with clusterName
             find_path(originName, originGenome, element, clusters, s, response)
             # add back cluster name for next iteration
-            clusters[clusterName] = element
+            # clusters[clusterName] = element
 
 
 
 
-def compare_min_diff(infectedGenome, comparators):
+def compare_min_diff(infectedName, infectedGenome, comparators):
     minDiff = sys.maxsize 
     minGenome = []
     minSilent = []
     for clusterName, clusterGenome in comparators.items():
+        if clusterName == infectedName:
+            continue
         diff = 0
         silent = True
         silentCount = 0
@@ -118,6 +143,8 @@ def compare_min_diff(infectedGenome, comparators):
             else:
                 minSilent = [True]
         elif diff == minDiff:
+            if silentCount <= 1:
+                silent = False
             minGenome.append(clusterName)
             if not silent:
                 minSilent.append(False)
