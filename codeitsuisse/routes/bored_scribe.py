@@ -41,7 +41,6 @@ def decrypt(message):
         if message in reachable:
             candidates_filtered[cand] = True
     # print(len(candidates_filtered),candidates_filtered)
-    wordDict = enchant.Dict("en_US")
     final_cand = None
     for cand, _ in candidates_filtered.items():
         if wordBreak2(cand):
