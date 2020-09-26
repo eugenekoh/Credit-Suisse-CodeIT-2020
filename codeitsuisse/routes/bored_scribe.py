@@ -1,7 +1,7 @@
 import logging
 import json
 import nltk
-# nltk.download("wordnet")
+nltk.download("wordnet")
 from nltk.corpus import wordnet
 from flask import request
 
