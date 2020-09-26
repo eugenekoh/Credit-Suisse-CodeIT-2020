@@ -15,10 +15,7 @@ logger = logging.getLogger(__name__)
 @app.route('/optimizedportfolio', methods=['POST'])
 def evaluate_optimized_portfolio():
     data = request.get_json()["inputs"]
-
-    with open(f'{time.time()}.json', 'w') as fp:
-        json.dump(request.get_json(), fp)
-
+    logger.info(request.get_json())
     outputs = []
     for d in data:
         portfolio_value = d["Portfolio"]["Value"]
