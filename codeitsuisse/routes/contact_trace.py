@@ -242,7 +242,7 @@ def compare_diff(x, y):
         if x[index] != y[index]:
 
             x_instr = list(x[index])
-            x_instr = list(y[index])
+            y_instr = list(y[index])
 
             #compare num diff in instr.
             diff_instr = compare_instr(x_instr, y_instr)
