@@ -39,6 +39,6 @@ ortools
 
 # optimized portfolio
 pandas
-
+sklearn
 numpy
 
