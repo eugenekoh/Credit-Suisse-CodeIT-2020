@@ -32,7 +32,12 @@ pytest
 # revisit geometry
 sympy
 
-# # english dict
-# pyenchant
+# english dict
+nltk
+
 # olympiad of babylon
 ortools
+
+# optimized portfolio
+pandas
+numpy
