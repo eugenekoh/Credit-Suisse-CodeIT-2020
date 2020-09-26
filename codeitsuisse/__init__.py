@@ -10,3 +10,4 @@ import codeitsuisse.routes.salad_spree
 import codeitsuisse.routes.sort
 import codeitsuisse.routes.square
 import codeitsuisse.routes.contact_trace
+import codeitsuisse.routes.cluster
