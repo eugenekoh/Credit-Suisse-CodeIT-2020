@@ -35,8 +35,8 @@ def evaluate_bucket_fill():
 def bucket_fill(circles, polylines):
     waterXArr = []
     for w in circles:
-        water = eval(w)
-        waterXArr.append(int(water["@cx"]))
+        water = w.get("@cx")
+        waterXArr.append(int(water))
     # waterY = int(circles["@cy"])
     buckets = []
     coordRanges = []
