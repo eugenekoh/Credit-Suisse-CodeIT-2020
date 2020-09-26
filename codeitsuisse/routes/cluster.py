@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 def evaluate_cluster():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
-
-    results = {"answers":cluster(data)}
+    count = cluster(data)
+    results = {"answer": count}
     logging.info("result :{}".format(results))
 
     return json.dumps(results)
