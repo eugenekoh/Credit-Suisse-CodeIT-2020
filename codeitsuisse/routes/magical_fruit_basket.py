@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @app.route('/fruitbasket', methods=['POST'])
 def evaluate_fruitbasket():
-    weightApple = 950
+    weightApple = 1120
     weightWatermelon = 1150
     weightBanana = 1300
     data = request.get_json()
