@@ -67,7 +67,7 @@ def decrypt(message):
     # get decrypted message
     best_count = 0
     best_cand = None
-    THRESHOLD = 0.6
+    THRESHOLD = 0.4
     for cand, count in candidates_filtered.items():
         n = len(cand)
         p = int(THRESHOLD*n)
