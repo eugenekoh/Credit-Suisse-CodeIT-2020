@@ -71,7 +71,9 @@ def decrypt(message):
         if curr_count > best_count:
             best_count = curr_count
             best_cand = cand
-    return best_cand, candidates_filtered[best_cand]
+    if best_cand is not None:
+        return best_cand, candidates_filtered[best_cand] 
+    return message, 0
     # tmp = final_cand
     # final_count = 0
     # while tmp != message:
