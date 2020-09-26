@@ -1,6 +1,6 @@
 import logging
 import networkx as nx
-
+import random
 import enum
 from flask import request, jsonify
 
@@ -124,16 +124,20 @@ class Solution:
         path = []
         i = 0
         while len(path) < win_length * 4:
+            if i >= len(self.board):
+                i = len(self.board) - 1 - i % (len(self.board) - 1)
+
             path.append(i + 1)
             cur = self.board[i]
+
             if cur.type == JumpType.End:
                 break
             elif cur.type in [JumpType.Ladder, JumpType.Snake]:
                 i = cur.next - 1
             elif cur.type == JumpType.Smoke:
-                i -= 1
+                i -= random.randint(1, 6)
             else:
-                i += 1
+                i += random.randint(1, 6)
 
         return self.convert_path_to_rolls(path)
 
