@@ -17,3 +17,4 @@ import codeitsuisse.routes.optimized_portfolio
 import codeitsuisse.routes.bored_scribe
 import codeitsuisse.routes.magical_fruit_basket
 import codeitsuisse.routes.bucket_fill
+import codeitsuisse.routes.supermarket
