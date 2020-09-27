@@ -103,14 +103,14 @@ def bucket_fill(circles, polylines):
         buckets.append(bucket)
     # get rid of overlapping buckets
     areas = 0
-    remove_overlapping_ranges(ranges)
-    removeElement = []
-    for i in range(len(buckets)):
-        if buckets[i]["Xranges"][1] not in ranges:
-            removeElement.append(buckets[i])
-            continue
-    for element in removeElement:
-        buckets.remove(element)
+    # remove_overlapping_ranges(ranges)
+    # removeElement = []
+    # for i in range(len(buckets)):
+    #     if buckets[i]["Xranges"][1] not in ranges:
+    #         removeElement.append(buckets[i])
+    #         continue
+    # for element in removeElement:
+    #     buckets.remove(element)
     
     ## create graph from pipes start with waterX
     ## DFS via x coordinates only
