@@ -137,16 +137,16 @@ def bucket_fill(circles, polylines):
                 btmPipeY = pipesY[i][1]
                 if bucketRangeX[0] <= pipesX[i][0] <= bucketRangeX[1]:
                     if bucketRangeY[0] <= pipesY[i][0] or bucketRangeY[1] <= pipesY[i][0]:
-                        if waterX == pipeX[i][0]:
-                            waterX = pipeX[i][0]
+                        if waterX == pipesX[i][0]:
+                            waterX = pipesX[i][0]
                             found = True
                             del pipesX[i]
                             del pipesY[i]
                             break
                 elif bucketRangeX[0] <= pipesX[i][1] <= bucketRangeX[1]:
                     if bucketRangeY[0] <= pipesY[i][1] or bucketRangeY[1] <= pipesY[i][1]:
-                        if waterX == pipeX[i][1]:
-                            waterX = pipeX[i][0]
+                        if waterX == pipesX[i][1]:
+                            waterX = pipesX[i][0]
                             found = True
                             btmPipeX = pipesX[i][0]
                             btmPipeY = pipesY[i][0]
