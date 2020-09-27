@@ -13,13 +13,16 @@ logger = logging.getLogger(__name__)
 def evaluate_pre_tick():
     data = request.data
     logger.info(f"data: {data}")
-    result = {}
+    result = {data}
     df = pd.read_csv(io.StringIO(data.decode('utf-8')))
     train(df)
     return jsonify(result)
 
 
 def train(df):
-    print(df.cols)
+    print(df['Open'].values)
+
+    # x_train = df[['Open','High','Low','Volume']].values
+    # y_train = df[['Close']]
     return 
 # def predict()
