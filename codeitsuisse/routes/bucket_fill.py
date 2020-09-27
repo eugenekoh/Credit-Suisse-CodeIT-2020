@@ -37,7 +37,8 @@ def bucket_fill(circles, polylines):
     waterYArr = []
     for w in circles:
         if type(w) == str:
-            water = json.loads(w)
+            json_acceptable_string = w.replace("'", "\"")
+            water = json.loads(json_acceptable_string)
             waterXArr.append(int(water.get("@cx")))
             waterYArr.append(int(water.get("@cy")))
         else:
@@ -132,21 +133,17 @@ def bucket_fill(circles, polylines):
             btmPipeX = 0
             btmPipeY = 0
             found = False
-            print(bucketRangeY)
             for i in range(len(pipesX)):
                 btmPipeX = pipesX[i][1]
                 btmPipeY = pipesY[i][1]
-                print(pipesY[i][0])
                 if bucketRangeX[0] <= pipesX[i][0] <= bucketRangeX[1]:
                     if bucketRangeY[0] <= pipesY[i][0] or bucketRangeY[1] <= pipesY[i][0]:
-                        print("here")
                         found = True
                         del pipesX[i]
-                        del pipeY[i]
+                        del pipesY[i]
                         break
                 elif bucketRangeX[0] <= pipesX[i][1] <= bucketRangeX[1]:
                     if bucketRangeY[0] <= pipesY[i][1] or bucketRangeY[1] <= pipesY[i][1]:
-                        print('here')
                         found = True
                         btmPipeX = pipesX[i][0]
                         btmPipeY = pipesY[i][0]
