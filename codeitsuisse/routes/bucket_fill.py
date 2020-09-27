@@ -35,12 +35,17 @@ def evaluate_bucket_fill():
 def bucket_fill(circles, polylines):
     waterXArr = []
     for w in circles:
-        water = w.get("@cx")
-        waterXArr.append(int(water))
+        if type(w) == str:
+            water = json.loads(w)
+            waterXArr.append(int(water))
+        else:
+            water = w.get("@cx")
+            waterXArr.append(int(water))
     # waterY = int(circles["@cy"])
     buckets = []
     coordRanges = []
     pipesX = []
+    pipesY = []
     ranges = []
     for bucket in polylines:
         points = bucket["@points"].split(" ")
@@ -49,8 +54,11 @@ def bucket_fill(circles, polylines):
             x1 = points[0].split(",")
             x2 = points[1].split(",")
             x = [int(x1[0]), int(x2[0])]
+            y = [int(x1[1]), int(x2[1])]
             x.sort()
+            y.sort()
             pipesX.append(x)
+            pipesY.append(y)
             continue
         # else is bucket, calculate area
         xArr = []
@@ -62,35 +70,42 @@ def bucket_fill(circles, polylines):
             xArr.append(x)
             yArr.append(y)
             yTop = max(y, yTop)
-        topRange = []
-        btmRange = []
+        topRangeX = []
+        topRangeY = []
+        btmRangeX = []
+        btmRangeY = []
         for i in range(len(xArr)):
             if yArr[i] == yTop:
                 topRange.append(xArr[i])
+                topRangeX.append(yArr[i])
             else:
                 btmRange.append(xArr[i])
+                btmRange.append(yArr[i])
         xArr.sort()
         yArr.sort()
-        topRange.sort()
-        btmRange.sort()
+        topRangeX.sort()
+        topRangeY.sort()
+        btmRangeY.sort()
+        btmRangeX.sort()
         bigArea = (xArr[-1] - xArr[0]) * (yArr[-1] - yArr[0])
         smallArea = (1/2 * (xArr[1]-xArr[0])*(yArr[-1] - yArr[0])) + (1/2* (xArr[-1]-xArr[-2])*(yArr[-1] - yArr[0]))
         area = bigArea - smallArea
         
-        coordRange = [topRange, btmRange]
+        coordRangeX = [topRangeX, btmRangeX]
+        coordRangeY = [topRangeY, btmRangeY]
         bucket = {}
         bucket["area"] = area
-        bucket["ranges"] = coordRange
+        bucket["Xranges"] = coordRangeX
+        bucket["Yranges"] = coordRangeY
         coordRanges.append(coordRange)
         ranges.append(btmRange)
         buckets.append(bucket)
     # get rid of overlapping buckets
     areas = 0
     remove_overlapping_ranges(ranges)
-    print(ranges)
     removeElement = []
     for i in range(len(buckets)):
-        if buckets[i]["ranges"][1] not in ranges:
+        if buckets[i]["Xranges"][1] not in ranges:
             removeElement.append(buckets[i])
             continue
     for element in removeElement:
@@ -101,7 +116,7 @@ def bucket_fill(circles, polylines):
     for waterX in waterXArr:
         stack = []
         for i in range(len(buckets)):
-            bucketRange = buckets[i]["ranges"]
+            bucketRange = buckets[i]["Xranges"]
             if bucketRange[0][0] <= waterX <= bucketRange[0][1]:
                 areas += buckets[i]["area"]
                 stack.append((bucketRange[1][0], bucketRange[1][1]))
@@ -124,7 +139,7 @@ def bucket_fill(circles, polylines):
                     break
             if found:
                 for i in range(len(buckets)):
-                    bucketRange = buckets[i]["ranges"]
+                    bucketRange = buckets[i]["Xranges"]
                     if bucketRange[0][0] <= btmPipe <= bucketRange[0][1]:
                         areas += buckets[i]["area"]
                         stack.append((bucketRange[1][0], bucketRange[1][1]))
