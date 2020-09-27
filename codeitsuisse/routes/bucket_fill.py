@@ -48,6 +48,7 @@ def bucket_fill(circles, polylines):
     pipesX = []
     pipesY = []
     ranges = []
+    yRanges = []
     for bucket in polylines:
         points = bucket["@points"].split(" ")
         # means is a pipe
@@ -84,33 +85,36 @@ def bucket_fill(circles, polylines):
                 btmRangeY.append(yArr[i])
         xArr.sort()
         yArr.sort()
-        topRangeX.sort()
-        topRangeY.sort()
-        btmRangeY.sort()
-        btmRangeX.sort()
         bigArea = (xArr[-1] - xArr[0]) * (yArr[-1] - yArr[0])
         smallArea = (1/2 * (xArr[1]-xArr[0])*(yArr[-1] - yArr[0])) + (1/2* (xArr[-1]-xArr[-2])*(yArr[-1] - yArr[0]))
         area = bigArea - smallArea
         
-        coordRangeX = [topRangeX, btmRangeX]
-        coordRangeY = [topRangeY, btmRangeY]
+        
         bucket = {}
         bucket["area"] = area
+        ranges.append(list(btmRangeX))
+        yRanges.append(btmRangeY[0])
+        yRanges.append(topRangeY[0])
+        topRangeX.sort()
+        topRangeY.sort()
+        btmRangeY.sort()
+        btmRangeX.sort()
+        coordRangeX = [topRangeX, btmRangeX]
+        coordRangeY = [topRangeY, btmRangeY]
         bucket["Xranges"] = coordRangeX
         bucket["Yranges"] = coordRangeY
         coordRanges.append(coordRangeX)
-        ranges.append(btmRangeX)
         buckets.append(bucket)
     # get rid of overlapping buckets
     areas = 0
-    # remove_overlapping_ranges(ranges)
-    # removeElement = []
-    # for i in range(len(buckets)):
-    #     if buckets[i]["Xranges"][1] not in ranges:
-    #         removeElement.append(buckets[i])
-    #         continue
-    # for element in removeElement:
-    #     buckets.remove(element)
+    remove_overlapping_ranges(ranges, yRanges)
+    removeElement = []
+    for i in range(len(buckets)):
+        if buckets[i]["Xranges"][1] not in ranges:
+            removeElement.append(buckets[i])
+            continue
+    for element in removeElement:
+        buckets.remove(element)
     
     ## create graph from pipes start with waterX
     ## DFS via x coordinates only
@@ -165,18 +169,23 @@ def bucket_fill(circles, polylines):
                             break
     return areas
 
-def remove_overlapping_ranges(intervals):
-    intervals.sort(key=lambda a: (a[0], -a[1]))
+def remove_overlapping_ranges(intervals, yIntervals):
+    # intervals.sort(key=lambda a: (a[0], -a[1]))
     removeElement = []
     for i in range(len(intervals)):
         compareRange1 = intervals[i][0]
         compareRange2 = intervals[i][1]
+        compareRangeY1 = int(yIntervals[0])
+        compareRangeY2 = int(yIntervals[0])
         for j in range(i+1, len(intervals)):
             remove = intervals[j]
             range1 = intervals[j][0]
             range2 = intervals[j][1]
+            rangeY1 = int(yIntervals[0])
+            rangeY2 = int(yIntervals[1])
             if compareRange1 < range1 and range2 < compareRange2:
-                removeElement.append(remove)
+                if min(rangeY1, rangeY2) > min(compareRangeY1, compareRangeY2) and max(rangeY1, rangeY2) < max(compareRangeY1, compareRangeY2):
+                    removeElement.append(remove)
     for element in removeElement:
         if element in intervals:
             intervals.remove(element)
