@@ -17,7 +17,9 @@ def evaluate_pre_tick():
     s=str(data,'utf-8')
     data = StringIO(s) 
     df=pd.read_csv(data)
-    Y = ridge(df)
+    ridge_Y = ridge(df)
+    lasso_Y = lasso(df)
+    Y = (ridge_Y + lasso_Y) / 2
     # test = df[-8:]
     # x_test = test[['Open','High','Low','Volume']].values
     # Y = predict(model, x_test)
@@ -54,8 +56,8 @@ def evaluate_pre_tick():
 #     Y = model.predict(np.array([features,]))
 #     return Y
 
-# def rmse(y_true, y_pred):
-#         return K.sqrt(K.mean(K.square(y_pred - y_true)))
+def rmse(y_true,y_pred):
+    return np.sqrt(mse(y_true,y_pred))
 
 def ridge(df):
     train = df[:1600]
@@ -65,9 +67,43 @@ def ridge(df):
     x_val = val[['Open','High','Low','Volume']]
     y_val = val.Close.values
 
-    ridge_model = Ridge(alpha=1/10).fit(x_train,y_train)
-    Y_pred = ridge_model.predict(x_val)
+    best_ridge_model = None
+    best_ridge_score = float('inf')
+    for a in range(1,51):
+        ridge_model = Ridge(alpha=a/10).fit(x_train,y_train)
+        val_pred_ridge = ridge_model.predict(x_val)
+        val_score_ridge = rmse(val_pred_ridge,y_val)
+        if val_score_ridge < best_ridge_score:
+            best_ridge_score = val_score_ridge
+            best_ridge_model = ridge_model
+
+    Y_pred = best_ridge_model.predict(x_val)
     return Y_pred[-1]
+
+def lasso(df):
+    train = df[:1600]
+    val = df[1600:]
+    x_train = train[['Open','High','Low','Volume']]
+    y_train = train.Close.values
+    x_val = val[['Open','High','Low','Volume']]
+    y_val = val.Close.values
+
+    best_lasso_model = None
+    best_lasso_score = float('inf')
+    for a in range(1,51):
+        lasso_model = Lasso(alpha=a/10).fit(x_train,y_train)
+        val_pred_lasso = lasso_model.predict(x_val)
+        val_score_lasso = rmse(val_pred_lasso,y_val)
+        if val_score_lasso < best_lasso_score:
+            best_lasso_score = val_score_lasso
+            best_lasso_model = lasso_model
+    
+    Y_pred = best_lasso_model.predict(x_val)
+    return Y_pred[-1]
+
+#
+
+
 # def deep_train(df):
 #     train = df[:6]
 #     val = df[6:]
