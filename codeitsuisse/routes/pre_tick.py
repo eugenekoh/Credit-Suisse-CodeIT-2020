@@ -5,7 +5,9 @@ from io import StringIO
 import json 
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge, Lasso
+from sklearn.metrics import mean_squared_error as mse
+
 
 logger = logging.getLogger(__name__)
 
