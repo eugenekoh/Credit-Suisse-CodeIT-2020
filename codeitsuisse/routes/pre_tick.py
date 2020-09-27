@@ -34,7 +34,7 @@ def train(df):
         'objective': 'regression',       
         'metric': ['rmse'],             
         'learning_rate': 0.05,           
-        'num_leaves': 2**9,            
+        'num_leaves': 2**7,            
         'min_data_in_leaf': 8,      
         'n_estimators': 100,            
         'early_stopping_rounds': 30,     
