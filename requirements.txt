@@ -48,3 +48,6 @@ xmltodict
 # snakes
 networkx
 
+# pre-tick
+lightgbm
+
