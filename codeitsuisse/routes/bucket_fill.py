@@ -34,13 +34,19 @@ def evaluate_bucket_fill():
 
 def bucket_fill(circles, polylines):
     waterXArr = []
-    for w in circles:
-        water = w.get("@cx")
-        waterXArr.append(int(water))
-    # waterY = int(circles["@cy"])
+    waterYArr = []
+    if type(circles) == list:
+        
+        for water in circles:
+            waterXArr.append(int(water.get("@cx")))
+            waterYArr.append(int(water.get("@cy")))
+    else:
+        waterXArr.append(int(circles.get("@cx")))
+        waterYArr.append(int(circles.get("@cy")))
     buckets = []
     coordRanges = []
     pipesX = []
+    pipesY = []
     ranges = []
     for bucket in polylines:
         points = bucket["@points"].split(" ")
@@ -49,8 +55,11 @@ def bucket_fill(circles, polylines):
             x1 = points[0].split(",")
             x2 = points[1].split(",")
             x = [int(x1[0]), int(x2[0])]
+            y = [int(x1[1]), int(x2[1])]
             x.sort()
+            y.sort()
             pipesX.append(x)
+            pipesY.append(y)
             continue
         # else is bucket, calculate area
         xArr = []
@@ -62,35 +71,42 @@ def bucket_fill(circles, polylines):
             xArr.append(x)
             yArr.append(y)
             yTop = max(y, yTop)
-        topRange = []
-        btmRange = []
+        topRangeX = []
+        topRangeY = []
+        btmRangeX = []
+        btmRangeY = []
         for i in range(len(xArr)):
             if yArr[i] == yTop:
-                topRange.append(xArr[i])
+                topRangeX.append(xArr[i])
+                topRangeY.append(yArr[i])
             else:
-                btmRange.append(xArr[i])
+                btmRangeX.append(xArr[i])
+                btmRangeY.append(yArr[i])
         xArr.sort()
         yArr.sort()
-        topRange.sort()
-        btmRange.sort()
+        topRangeX.sort()
+        topRangeY.sort()
+        btmRangeY.sort()
+        btmRangeX.sort()
         bigArea = (xArr[-1] - xArr[0]) * (yArr[-1] - yArr[0])
         smallArea = (1/2 * (xArr[1]-xArr[0])*(yArr[-1] - yArr[0])) + (1/2* (xArr[-1]-xArr[-2])*(yArr[-1] - yArr[0]))
         area = bigArea - smallArea
         
-        coordRange = [topRange, btmRange]
+        coordRangeX = [topRangeX, btmRangeX]
+        coordRangeY = [topRangeY, btmRangeY]
         bucket = {}
         bucket["area"] = area
-        bucket["ranges"] = coordRange
-        coordRanges.append(coordRange)
-        ranges.append(btmRange)
+        bucket["Xranges"] = coordRangeX
+        bucket["Yranges"] = coordRangeY
+        coordRanges.append(coordRangeX)
+        ranges.append(btmRangeX)
         buckets.append(bucket)
     # get rid of overlapping buckets
     areas = 0
     remove_overlapping_ranges(ranges)
-    print(ranges)
     removeElement = []
     for i in range(len(buckets)):
-        if buckets[i]["ranges"][1] not in ranges:
+        if buckets[i]["Xranges"][1] not in ranges:
             removeElement.append(buckets[i])
             continue
     for element in removeElement:
@@ -98,38 +114,55 @@ def bucket_fill(circles, polylines):
     
     ## create graph from pipes start with waterX
     ## DFS via x coordinates only
-    for waterX in waterXArr:
+    for i in range(len(waterXArr)):
+        waterX = waterXArr[i]
+        waterY = waterYArr[i]
         stack = []
         for i in range(len(buckets)):
-            bucketRange = buckets[i]["ranges"]
-            if bucketRange[0][0] <= waterX <= bucketRange[0][1]:
-                areas += buckets[i]["area"]
-                stack.append((bucketRange[1][0], bucketRange[1][1]))
-                del buckets[i]
-                break
+            bucketRangeX = buckets[i]["Xranges"]
+            bucketRangeY = buckets[i]["Yranges"]
+            if bucketRangeX[0][0] <= waterX <= bucketRangeX[0][1]:
+                if bucketRangeY[0][0] >= waterY or waterY <= bucketRangeY[0][0]:
+                    areas += buckets[i]["area"]
+                    stack.append(((bucketRangeX[1][0], bucketRangeX[1][1]), (bucketRangeY[1][0], bucketRangeY[1][1])))
+                    del buckets[i]
+                    break
         while stack:
-            bucketRange = stack.pop()
-            btmPipe = 0
+            bucketRangeX, bucketRangeY = stack.pop()
+            btmPipeX = 0
+            btmPipeY = 0
             found = False
             for i in range(len(pipesX)):
-                btmPipe = pipesX[i][1]
-                if bucketRange[0] <= pipesX[i][0] <= bucketRange[1]:
-                    found = True
-                    del pipesX[i]
-                    break
-                elif bucketRange[0] <= pipesX[i][1] <= bucketRange[1]:
-                    found = True
-                    btmPipe = pipesX[i][0]
-                    del pipesX[i]
-                    break
+                btmPipeX = pipesX[i][1]
+                btmPipeY = pipesY[i][1]
+                if bucketRangeX[0] <= pipesX[i][0] <= bucketRangeX[1]:
+                    if bucketRangeY[0] <= pipesY[i][0] or bucketRangeY[1] <= pipesY[i][0]:
+                        if waterX == pipesX[i][0]:
+                            waterX = pipesX[i][0]
+                            found = True
+                            del pipesX[i]
+                            del pipesY[i]
+                            break
+                elif bucketRangeX[0] <= pipesX[i][1] <= bucketRangeX[1]:
+                    if bucketRangeY[0] <= pipesY[i][1] or bucketRangeY[1] <= pipesY[i][1]:
+                        if waterX == pipesX[i][1]:
+                            waterX = pipesX[i][0]
+                            found = True
+                            btmPipeX = pipesX[i][0]
+                            btmPipeY = pipesY[i][0]
+                            del pipesX[i]
+                            del pipesY[i]
+                            break
             if found:
                 for i in range(len(buckets)):
-                    bucketRange = buckets[i]["ranges"]
-                    if bucketRange[0][0] <= btmPipe <= bucketRange[0][1]:
-                        areas += buckets[i]["area"]
-                        stack.append((bucketRange[1][0], bucketRange[1][1]))
-                        del buckets[i]
-                        break
+                    bucketRangeX = buckets[i]["Xranges"]
+                    bucketRangeY = buckets[i]["Yranges"]
+                    if bucketRangeX[0][0] <= btmPipeX <= bucketRangeX[0][1]:
+                        if bucketRangeY[0][0] >= btmPipeY or btmPipeY <= bucketRangeY[0][0]:
+                            areas += buckets[i]["area"]
+                            stack.append(((bucketRangeX[1][0], bucketRangeX[1][1]), (bucketRangeY[1][0], bucketRangeY[1][1])))
+                            del buckets[i]
+                            break
     return areas
 
 def remove_overlapping_ranges(intervals):

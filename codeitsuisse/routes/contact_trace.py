@@ -23,86 +23,87 @@ def evaluate_contact_tracing():
     response = set()
 
     clusters = {}
+    # add all cluster into a map including origin
     clusters[originName] = originGenome
-    for node in cluster:
-        clusterGenome = node.get("genome").split("-")
-        clusterName = node.get("name")
+    for n in cluster:
+        clusterGenome = n.get("genome").split("-")
+        clusterName = n.get("name")
         clusters[clusterName] = clusterGenome
     
-    graph_map = {}
-    graph_map[originName] = []
+    graph = {}
+    graph[originName] = []
 
     for name, genome in clusters.items():
         if name == originName:
             continue
-        min_nodes = []
-        min_diff = sys.maxsize
-        dist_dict = {} 
-        for name_other, genome_other in clusters.items():
+        minClusters = []
+        minDiff = sys.maxsize
+        distanceHashMap = {} 
+        for nextName, nextGenome in clusters.items():
             
-            if name != name_other:
-                diff_genome, non_silent = compare_diff(genome, genome_other)
-                dist_dict[name_other] = [diff_genome, non_silent]
-                if diff_genome <= min_diff and diff_genome != 0:
-                    min_diff = diff_genome
+            if name != nextName:
+                diffGenome, silent = compare_diff(genome, nextGenome)
+                distanceHashMap[nextName] = [diffGenome, silent]
+                if diffGenome <= minDiff and diffGenome != 0:
+                    minDiff = diffGenome
 
-        for dist_name, details in dist_dict.items():
-            if details[0] == min_diff:
-                min_nodes.append([dist_name, details[1]])
-        graph_map[name] = min_nodes
+        for name, details in distanceHashMap.items():
+            if details[0] == minDiff:
+                minClusters.append([name, details[1]])
+        graph[name] = minClusters
 
 
 
-    infected_map = []
-    dist_dict = {} 
-    min_diff = sys.maxsize
+    infectedGraph = []
+    distanceHashMap = {} 
+    minDiff = sys.maxsize
     for name, genome in clusters.items():
-        diff_genome, non_silent = compare_diff(genome, infectedGenome)
-        dist_dict[name] = [diff_genome, non_silent]
-        if diff_genome <= min_diff:
-            min_diff = diff_genome
+        diffGenome, silent = compare_diff(genome, infectedGenome)
+        distanceHashMap[name] = [diffGenome, silent]
+        if diffGenome <= minDiff:
+            minDiff = diffGenome
 
-    for name, details in dist_dict.items():
-        if details[0] == min_diff:
-            infected_map.append([name, details[1]])
+    for name, details in distanceHashMap.items():
+        if details[0] == minDiff:
+            infectedGraph.append([name, details[1]])
 
 
-    graph_map[infectedName] = infected_map
-    paths = []
+    graph[infectedName] = infectedGraph
+    traces = []
 
-    next_nodes = infected_map
-    for node in infected_map:
-        paths.append([[infectedName], node])
+    nextCluster = infectedGraph
+    for n in infectedGraph:
+        traces.append([[infectedName], n])
         
-    temp = paths.copy()
+    copyTrace = traces.copy()
     sol = []
 
-    while len(temp) > 0:
-        for index in range(len(paths)):
-            path = paths[index]
-            last_node = path[-1]
+    while len(copyTrace) > 0:
+        for index in range(len(traces)):
+            trace = traces[index]
+            lastCluster = trace[-1]
             
-            if type(last_node) == str: 
-                next_nodes = graph_map[last_node]
+            if type(lastCluster) == str: 
+                nextCluster = graph[lastCluster]
             else:
-                next_nodes = graph_map[last_node[0]]
+                nextCluster = graph[lastCluster[0]]
 
-            if len(next_nodes) == 0: 
-                sol.append(path)
-                temp.remove(path)
-            elif len(next_nodes) == 1:
+            if len(nextCluster) == 0: 
+                sol.append(trace)
+                copyTrace.remove(trace)
+            elif len(nextCluster) == 1:
                 
-                path.append(next_nodes[0])
-                temp[index] = path
+                trace.append(nextCluster[0])
+                copyTrace[index] = trace
 
             else:
-                path.append(next_nodes[0])
-                for node in next_nodes[1:]:
-                    new_path = path.copy()
+                trace.append(nextCluster[0])
+                for node in nextCluster[1:]:
+                    new_path = trace.copy()
                     new_path.append(node)
-                    temp.append(new_path)
+                    copyTrace.append(new_path)
 
-        paths = temp.copy()
+        traces = copyTrace.copy()
     
 
     for s in sol:
@@ -115,30 +116,6 @@ def evaluate_contact_tracing():
                     res = "{}*".format(res)
                 res = "{} -> {}".format(res, n[0])
         response.add(res)
-
-    # graph = {}
-    # graph[originName] = []
-    # # build graph of minimum clusters
-    # for clusterName, clusterGenome in clusters.items():
-    #     # do not process origin
-    #     if clusterName == originName:
-    #         continue
-    #     minimunClusters = []
-    #     minDiff = sys.maxsize
-    #     distanceBtwClusters = {}
-    #     for nextName, nextGenome in clusters.items():
-    #         # skip own cluster
-    #         if clusterName != nextName:
-    #             thisGenome, thisSilent = compare_diff(clusterGenome, nextGenome)
-    #             distanceBtwClusters[nextName] = [thisGenome, thisSilent]
-    #             if thisGenome <= minDiff and thisGenome != 0:
-    #                 minDiff = thisGenome
-
-    #     # iterate the distance between clusters to append to minimum clusters
-    #     for name, detailArr in distanceBtwClusters.items():
-    #         if detailArr[0] == minDiff:
-    #             minimunClusters.append([name,detailArr[1]])
-    #     graph[clusterName] = minimunClusters
 
     
     # startGraph = []
@@ -234,38 +211,34 @@ def evaluate_contact_tracing():
 
 
 def compare_diff(x, y):
-    diff_genome = 0 
+    diffGenome = 0 
     first_char_diff_genome = 0 
-    non_silent = False
+    silent = False
 
     for index in range(len(x)):
         if x[index] != y[index]:
-
             x_instr = list(x[index])
             y_instr = list(y[index])
 
-            #compare num diff in instr.
+            # compare number of difference in instructions
+            diff = 0
+            first_char_diff = 0
+
+            for char_index in range(len(instr1)):
+                
+                if instr1[char_index] != instr2[char_index]:
+                    if char_index == 0:
+                        first_char_diff += 1
+                    diff += 1
+            diff_instr = [diff, first_char_diff]
             diff_instr = compare_instr(x_instr, y_instr)
-            diff_genome += diff_instr[0]
+            diffGenome += diff_instr[0]
             first_char_diff_genome += diff_instr[1]
     if first_char_diff_genome > 1:
-        non_silent = True
+        silent = True
     
-    return diff_genome, non_silent
+    return diffGenome, silent
 
-def compare_instr(instr1, instr2):
-
-    diff = 0
-    first_char_diff = 0
-
-    for char_index in range(len(instr1)):
-        
-        if instr1[char_index] != instr2[char_index]:
-            if char_index == 0:
-                first_char_diff += 1
-            diff += 1
-    
-    return [diff, first_char_diff]
 
 # def find_trace(name, originName, originGenome, node, clusters, s, response):
 #     nextEntriesGenome, nextEntriesSilent, nextEntriesDiff = compare_minDiff(name, node, clusters)
