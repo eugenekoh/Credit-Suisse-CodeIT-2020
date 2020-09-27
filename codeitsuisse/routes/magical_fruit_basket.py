@@ -13,9 +13,9 @@ WEIGHT_1 = 900
 WEIGHT_2 = 1112
 WEIGHT_3 = 1333
 
-FRUIT_1 = "maApple"
-FRUIT_2 = "maWatermelon"
-FRUIT_3 = "maBanana"
+FRUIT_1 = "maPomegranate"
+FRUIT_2 = "maPineapple"
+FRUIT_3 = "maWatermelon"
 
 @app.route('/fruitbasket', methods=['POST'])
 def evaluate_fruitbasket():
