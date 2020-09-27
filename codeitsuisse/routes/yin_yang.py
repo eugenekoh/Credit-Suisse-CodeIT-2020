@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.route('/yin-yang', methods=['POST'])
-def evaluate_yy(data):
+def evaluate_yy():
     """
     {
         "number_of_elements" : n,
@@ -19,7 +19,7 @@ def evaluate_yy(data):
     :return:
     """
 
-    # data = request.get_json()
+    data = request.get_json()
     logger.info(f"yin-yang data: {data}")
     n = data["number_of_elements"]
     k = data["number_of_operations"]
