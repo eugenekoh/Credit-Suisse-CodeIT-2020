@@ -29,8 +29,7 @@ def train(df):
     y_train = train.Close.values
     x_val = val[['Open','High','Low','Volume']]
     y_val = val.Close.values
-    lgb_params = {
-        'boosting_type': 'gbdt',         
+    lgb_params = {'boosting_type': 'gbdt',
         'objective': 'regression',       
         'metric': ['rmse'],             
         'subsample': 0.6,                
@@ -41,13 +40,14 @@ def train(df):
         'feature_fraction': 0.6,
         'n_estimators': 20,            
         'early_stopping_rounds': 30,     
-        'verbose': -1,
-    } 
+        'verbose': 1,}
     train_set = lgb.Dataset(x_train, y_train)
     val_set = lgb.Dataset(x_val, y_val)
-    lgb_model = lgb.train(lgb_params, train_set, num_boost_round = 500, valid_sets = [train_set, val_set], verbose_eval = 100)
-
+    lgb_model = lgb.train(lgb_params, train_set, num_boost_round = 50, valid_sets = [train_set, val_set], verbose_eval = 100)
+    logger.info("=== TRAINING DONE ====")
     return lgb_model
 
 def predict(model, features):
+    logger.info(f"predictors: {features}")
+    logger.info("=== PREDICTING ===")
     return model.predict(features)
