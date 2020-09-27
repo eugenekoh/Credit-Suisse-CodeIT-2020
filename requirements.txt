@@ -33,7 +33,8 @@ sympy
 
 # english dict
 nltk
-
+english-words
+wordninja
 # olympiad of babylon
 ortools
 
@@ -43,4 +44,10 @@ numpy
 
 # bucket fill
 xmltodict
+
+# snakes
+networkx
+
+# pre-tick
+lightgbm
 

@@ -1,13 +1,15 @@
 import logging
 import json
-import nltk
-try:
-    nltk.download("wordnet")
-except:
-    pass
-from nltk.corpus import wordnet
-from flask import request
-
+# import nltk
+# try:
+#     nltk.download("wordnet")
+# except:
+#     pass
+# from nltk.corpus import wordnet
+import wordninja
+from english_words import english_words_set
+from flask import request, jsonify
+from collections import deque
 from codeitsuisse import app
 import random
 
@@ -17,13 +19,13 @@ logger = logging.getLogger(__name__)
 def evaluate_bored_scribe():
     data = request.get_json()
     logging.info("data sent for evaluation {}".format(data))
-    print(' ')
+
     results = []
     for test_case in data:
         message, count = decrypt(test_case['encryptedText'])
         results.append({"id": test_case["id"], "encryptionCount": count, "originalText": message})
     logging.info("result :{}".format(results))
-    return json.dumps(results)
+    return jsonify(results)
 
 def decrypt(message):
     start, end, count = getShift(message)
@@ -33,7 +35,7 @@ def decrypt(message):
     candidates = {}
     output = [c for c in message]
     # generate candidates
-    for i in range(25):
+    for i in range(26):
         output = [chr((ord(c)-97 + 1) % 26 + 97) for c in output]
         candidates[''.join(output)] = True
     # print(len(candidates),candidates)
@@ -54,33 +56,65 @@ def decrypt(message):
                 break
         if dist_to_message is not None:
             candidates_filtered[cand] = dist_to_message
-    
-    l = [cand for cand in candidates_filtered]
-    if len(l) == 0:
-        return message, 0
-    rng = random.randint(0,len(l)-1)
-    return l[rng], candidates_filtered[l[rng]]
+    # logging.info(f"{candidates_filtered}")
+    # l = [cand for cand in candidates_filtered]
+    # if len(l) == 0:
+    #     return message, 0
+    # rng = random.randint(0,len(l)-1)
+    # return l[rng], candidates_filtered[l[rng]]
     # print(len(candidates_filtered),candidates_filtered)
 
-    # final_cand = None
-    # for cand, _ in candidates_filtered.items():
-    #     if wordBreak2(cand):
-    #         final_cand = cand
-    # if final_cand == None:
-    #     return message, 0
-    # tmp = final_cand
-    # final_count = 0
-    # while tmp != message:
-    #     final_count += 1
-    #     shift = sum([ord(c) for c in tmp[start:end]]) + count
-    #     tmp = ''.join([chr((ord(c)-97 + shift) % 26 + 97) for c in tmp])
-    #     if tmp == message:
-    #         break
-    # if final_cand is None:
+    # get decrypted message
+    best_count = 0
+    best_cand = None
+    THRESHOLD = 0.4
+    for cand, count in candidates_filtered.items():
+        n = len(cand)
+        p = int(THRESHOLD*n)
+        curr_count = wordBreak2(cand[:30])
+        if curr_count > best_count:
+            best_count = curr_count
+            best_cand = cand
+            
+    # get word breaks
+    if best_cand is not None:
+        try:
+            toReturn = ' '.join(wordninja.split(best_cand))
+            return toReturn, candidates_filtered[best_cand]
+        except:
+            return best_cand, candidates_filtered[best_cand]
+    try:
+        toReturn = ' '.join(wordninja.split(message))
+        return toReturn, 0
+    except:
+        return message, 0
+
+    # best_cand = None
+    # best_count = 0
+    # enc_count = 0
+    # for cand, count in candidates_filtered.items():
+    #     try:
+    #         cand_split = wordninja.split(cand)
+    #         num_eng = 0
+    #         for word in cand_split:
+    #             if len(word) > 3:
+    #                 num_eng += 1
+    #         if num_eng > len(cand_split) // 2:
+    #             return ' '.join(cand_split), count
+    #         if num_eng > best_count:
+    #             best_count = num_eng
+    #             best_cand = ' '.join(cand_split)
+    #             enc_count = count
+    #     except:
+    #         pass
+    # if best_cand is not None:
+    #     return best_cand, enc_count
+    # try:
+    #     toReturn = ' '.join(wordninja.split(message))
+    #     return toReturn, 0
+    # except:
     #     return message, 0
 
-    # else:
-    #     return final_cand, final_count
 
 def getShift(s):
     centers = 2*len(s)-1
@@ -140,20 +174,39 @@ def wordBreak(s, wordDict):
 
 def wordBreak2(s):
     dp = [[False]*len(s) for i in range(len(s))]
+    count = 0
     for i in range(len(s)-1,-1,-1):
         for j in range(len(s)):
             if i == j:
-                dp[i][j] = True if (s[i] == 'a' or s[i] == 'i') else False
+                dp[i][j] = False
             elif i > j:
                 continue
-            elif len(wordnet.synsets(s[i:j+1])) > 0:
+            elif s[i:j+1] in english_words_set and j+1-i > 4:
                 dp[i][j] = True
+                count += 1
             else:
                 for k in range(i,j+1):
                     if dp[i][k] and dp[k+1][j]:
                         dp[i][j] = True
+                        count += 1
                         break
-    return dp[0][-1]
+    return count
+
+def breakMessage(fringe, fringes, s):
+    print(s)
+    if s == '':
+        fringes.append(fringe)
+        return
+    
+    for i in range(1,len(s)):
+        if s[:i] in english_words_set:
+            print(s[:i])
+            breakMessage(fringe + [s[:i]], fringes, s[i:])
+        else:
+            break
+
+    
+
 
 # d = enchant.Dict("en_US")
 # print(decrypt("oxzbzxofpxkbkdifpemxifkaoljb"))
