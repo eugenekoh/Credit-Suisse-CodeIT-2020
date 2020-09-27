@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.route('/yin-yang', methods=['POST'])
-def evaluate_yy():
+def evaluate_yy(data):
     """
     {
         "number_of_elements" : n,
@@ -19,7 +19,7 @@ def evaluate_yy():
     :return:
     """
 
-    data = request.get_json()
+    # data = request.get_json()
     logger.info(f"yin-yang data: {data}")
     n = data["number_of_elements"]
     k = data["number_of_operations"]
@@ -50,19 +50,28 @@ class Solution:
 
             # choose most rational decision
             left_elem = elem[:i] + elem[i + 1:]
-            left_yang = self.yy(left_elem, k - 1)
-            if elem[i] == "Y":
-                left_yang += Decimal(1)
-
             right = len(elem) - 1 - i
             right_elem = elem[:right] + elem[right + 1:]
-            right_yang = self.yy(right_elem, k - 1)
-            if elem[right] == "Y":
-                right_yang += Decimal(1)
 
-            # add expectation from this branch
-            max_yang = max(left_yang, right_yang)
-            expected_yang += max_yang * Decimal(1) / Decimal(len(elem))
+            if elem[i] == "Y" and elem[right] != "Y":
+                left_yang = self.yy(left_elem, k-1) + Decimal(1)
+                expected_yang += left_yang / Decimal(len(elem))
+            elif elem[i] != "Y" and elem[right] == "Y":
+                right_yang = self.yy(right_elem, k-1) + Decimal(1)
+                expected_yang += right_yang / Decimal(len(elem))
+            elif left_elem == right_elem:
+                left_yang = self.yy(left_elem, k-1) + Decimal(1)
+                expected_yang += left_yang / Decimal(len(elem))
+            else:
+                left_yang = self.yy(left_elem, k - 1)
+                right_yang = self.yy(right_elem, k - 1)
+                if elem[i] == "Y":
+                    left_yang += Decimal(1)
+                if elem[right] == "Y":
+                    right_yang += Decimal(1)
+
+                yang = (left_yang + right_yang) / Decimal(2)
+                expected_yang += yang / Decimal(len(elem))
 
         # keep solution to current search node
         if elem not in self.memo:
