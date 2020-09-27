@@ -2,7 +2,7 @@ import logging
 from flask import request, jsonify
 from codeitsuisse import app
 from io import StringIO
-import json
+import json 
 import pandas as pd
 import lightgbm as lgb
 
@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 @app.route('/pre-tick', methods=['POST'])
 def evaluate_pre_tick():
-    # data = request.data
-    # logger.info(f"data: {data}")
+    data = request.data
+    logger.info(f"data: {data}")
     # s = str(data,'utf-8')
     # s = s.split("\n")
     # columns = s[0].split(',')
@@ -27,7 +27,13 @@ def evaluate_pre_tick():
     # Y = predict(model, X)[0]
     # logger.info(f"prediction:{Y}")
     # return jsonify(Y)
-    return json.dumps(88)
+    s=str(data,'utf-8')
+    data = StringIO(s) 
+    df=pd.read_csv(data)
+    model = train(df)
+    X = df[-1:][['Open','High','Low','Volume']].values
+    Y = predict(model, X)[0]
+    return json.dumps(Y)
 
 
 def train(df):
