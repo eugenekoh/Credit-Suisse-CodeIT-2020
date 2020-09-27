@@ -14,8 +14,12 @@ def evaluate_pre_tick():
     data = request.data
     logger.info(f"data: {data}")
     s = str(data,'utf-8')
-    data = StringIO(s) 
-    df = pd.read_csv(data)
+    s = s.split("\n")
+    columns = s[0].split(',')
+    data = []
+    for row in s[1:]:
+        data.append(row.split(","))
+    df = pd.DataFrame(data, columns = columns)
     model = train(df)
     X = df[-1:][['Open','High','Low','Volume']].values
     Y = predict(model, X)[0]
@@ -26,6 +30,7 @@ def evaluate_pre_tick():
 def train(df):
     train = df[:1600]
     val = df[1600:]
+    print(train)
     x_train = train[['Open','High','Low','Volume']]
     y_train = train.Close.values
     x_val = val[['Open','High','Low','Volume']]
