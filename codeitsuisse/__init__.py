@@ -20,3 +20,4 @@ import codeitsuisse.routes.slms
 import codeitsuisse.routes.bucket_fill
 import codeitsuisse.routes.yin_yang
 import codeitsuisse.routes.driverless_car
+import codeitsuisse.routes.pre_tick
