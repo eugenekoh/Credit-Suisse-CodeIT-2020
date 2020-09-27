@@ -23,14 +23,15 @@ def evaluate_contact_tracing():
     response = set()
 
     clusters = {}
+    # add all cluster into a map including origin
     clusters[originName] = originGenome
-    for node in cluster:
-        clusterGenome = node.get("genome").split("-")
-        clusterName = node.get("name")
+    for n in cluster:
+        clusterGenome = n.get("genome").split("-")
+        clusterName = n.get("name")
         clusters[clusterName] = clusterGenome
     
-    graph_map = {}
-    graph_map[originName] = []
+    graph = {}
+    graph[originName] = []
 
     for name, genome in clusters.items():
         if name == originName:
@@ -49,7 +50,7 @@ def evaluate_contact_tracing():
         for dist_name, details in dist_dict.items():
             if details[0] == min_diff:
                 min_nodes.append([dist_name, details[1]])
-        graph_map[name] = min_nodes
+        graph[name] = min_nodes
 
 
 
@@ -67,7 +68,7 @@ def evaluate_contact_tracing():
             infected_map.append([name, details[1]])
 
 
-    graph_map[infectedName] = infected_map
+    graph[infectedName] = infected_map
     paths = []
 
     next_nodes = infected_map
@@ -83,9 +84,9 @@ def evaluate_contact_tracing():
             last_node = path[-1]
             
             if type(last_node) == str: 
-                next_nodes = graph_map[last_node]
+                next_nodes = graph[last_node]
             else:
-                next_nodes = graph_map[last_node[0]]
+                next_nodes = graph[last_node[0]]
 
             if len(next_nodes) == 0: 
                 sol.append(path)
@@ -115,30 +116,6 @@ def evaluate_contact_tracing():
                     res = "{}*".format(res)
                 res = "{} -> {}".format(res, n[0])
         response.add(res)
-
-    # graph = {}
-    # graph[originName] = []
-    # # build graph of minimum clusters
-    # for clusterName, clusterGenome in clusters.items():
-    #     # do not process origin
-    #     if clusterName == originName:
-    #         continue
-    #     minimunClusters = []
-    #     minDiff = sys.maxsize
-    #     distanceBtwClusters = {}
-    #     for nextName, nextGenome in clusters.items():
-    #         # skip own cluster
-    #         if clusterName != nextName:
-    #             thisGenome, thisSilent = compare_diff(clusterGenome, nextGenome)
-    #             distanceBtwClusters[nextName] = [thisGenome, thisSilent]
-    #             if thisGenome <= minDiff and thisGenome != 0:
-    #                 minDiff = thisGenome
-
-    #     # iterate the distance between clusters to append to minimum clusters
-    #     for name, detailArr in distanceBtwClusters.items():
-    #         if detailArr[0] == minDiff:
-    #             minimunClusters.append([name,detailArr[1]])
-    #     graph[clusterName] = minimunClusters
 
     
     # startGraph = []
