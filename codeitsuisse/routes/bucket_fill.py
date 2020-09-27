@@ -35,15 +35,20 @@ def evaluate_bucket_fill():
 def bucket_fill(circles, polylines):
     waterXArr = []
     waterYArr = []
-    for w in circles:
-        if type(w) == str:
-            json_acceptable_string = w.replace("'", "\"")
-            water = json.loads(json_acceptable_string)
+    if type(circles) == list:
+        
+        for water in circles:
+        # if type(w) == str:
+        #     json_acceptable_string = w.replace("'", "\"")
+        #     water = json.loads(json_acceptable_string)
             waterXArr.append(int(water.get("@cx")))
             waterYArr.append(int(water.get("@cy")))
-        else:
-            waterXArr.append(int(w.get("@cx")))
-            waterYArr.append(int(w.get("@cy")))
+        # else:
+        #     waterXArr.append(int(w.get("@cx")))
+        #     waterYArr.append(int(w.get("@cy")))
+    else:
+        waterXArr.append(int(circles.get("@cx")))
+        waterYArr.append(int(circles.get("@cy")))
     buckets = []
     coordRanges = []
     pipesX = []
@@ -155,7 +160,7 @@ def bucket_fill(circles, polylines):
                     bucketRangeX = buckets[i]["Xranges"]
                     bucketRangeY = buckets[i]["Yranges"]
                     if bucketRangeX[0][0] <= btmPipeX <= bucketRangeX[0][1]:
-                        if bucketRangeY[0][0] >= btmPipeY or btmPipeY <= bucketRnageY[0][0]:
+                        if bucketRangeY[0][0] >= btmPipeY or btmPipeY <= bucketRangeY[0][0]:
                             areas += buckets[i]["area"]
                             stack.append(((bucketRangeX[1][0], bucketRangeX[1][1]), (bucketRangeY[1][0], bucketRangeY[1][1])))
                             del buckets[i]
