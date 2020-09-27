@@ -38,14 +38,8 @@ def bucket_fill(circles, polylines):
     if type(circles) == list:
         
         for water in circles:
-        # if type(w) == str:
-        #     json_acceptable_string = w.replace("'", "\"")
-        #     water = json.loads(json_acceptable_string)
             waterXArr.append(int(water.get("@cx")))
             waterYArr.append(int(water.get("@cy")))
-        # else:
-        #     waterXArr.append(int(w.get("@cx")))
-        #     waterYArr.append(int(w.get("@cy")))
     else:
         waterXArr.append(int(circles.get("@cx")))
         waterYArr.append(int(circles.get("@cy")))
@@ -143,18 +137,22 @@ def bucket_fill(circles, polylines):
                 btmPipeY = pipesY[i][1]
                 if bucketRangeX[0] <= pipesX[i][0] <= bucketRangeX[1]:
                     if bucketRangeY[0] <= pipesY[i][0] or bucketRangeY[1] <= pipesY[i][0]:
-                        found = True
-                        del pipesX[i]
-                        del pipesY[i]
-                        break
+                        if waterX == pipeX[i][0]:
+                            waterX = pipeX[i][0]
+                            found = True
+                            del pipesX[i]
+                            del pipesY[i]
+                            break
                 elif bucketRangeX[0] <= pipesX[i][1] <= bucketRangeX[1]:
                     if bucketRangeY[0] <= pipesY[i][1] or bucketRangeY[1] <= pipesY[i][1]:
-                        found = True
-                        btmPipeX = pipesX[i][0]
-                        btmPipeY = pipesY[i][0]
-                        del pipesX[i]
-                        del pipesY[i]
-                        break
+                        if waterX == pipeX[i][1]:
+                            waterX = pipeX[i][0]
+                            found = True
+                            btmPipeX = pipesX[i][0]
+                            btmPipeY = pipesY[i][0]
+                            del pipesX[i]
+                            del pipesY[i]
+                            break
             if found:
                 for i in range(len(buckets)):
                     bucketRangeX = buckets[i]["Xranges"]
