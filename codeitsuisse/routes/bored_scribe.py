@@ -71,7 +71,7 @@ def decrypt(message):
     for cand, count in candidates_filtered.items():
         n = len(cand)
         p = int(THRESHOLD*n)
-        curr_count = wordBreak2(cand[:30])
+        curr_count = wordBreak2(cand[:40])
         if curr_count > best_count:
             best_count = curr_count
             best_cand = cand
